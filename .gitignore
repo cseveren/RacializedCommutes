@@ -47,3 +47,10 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+#Other
+desktop.ini
+
+# Mac vars (can cause sync problems)
+.DS_Store
+*.DS_Store
