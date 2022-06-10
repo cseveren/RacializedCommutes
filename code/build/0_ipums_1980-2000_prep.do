@@ -17,7 +17,7 @@ clear
 *****************************
 ** 0) Create narrow dataset with PWPUMAs
 
-use		"$ROOT\empirics\input\ipums_pwpumas\ipums_pwpumas.dta"
+use		"${DATA}/empirics/input/ipums_pwpumas/ipums_pwpumas.dta"
 drop if pwpuma00==0 | pwpuma00==1 /* not identifieable, N/A, or didn't work in US/PR */
 drop if pwpuma==0 | pwpuma==999   /* N/A or abroad */
 
@@ -30,7 +30,7 @@ tempfile workpuma
 save "`workpuma'", replace
 clear
 
-use		"$ROOT\empirics\input\ipums80-00_2\ipums1980-2000_all.dta"
+use		"${DATA}/empirics/input/ipums80-00_2/ipums1980-2000_all.dta"
 
 keep if empstatd==10 | empstatd==14 /* Much faster if only consider people with trantime */
 
@@ -55,7 +55,7 @@ keep if year==1980
 
 gen 	ctygrp1980 = 1000*statefip + cntygp98 
 
-joinby 	ctygrp1980 using "$ROOT\empirics\input\crosswalks\cw_ctygrp1980_czone\cw_ctygrp1980_czone_corr.dta", unmatched(both) _merge(m1980)
+joinby 	ctygrp1980 using "${DATA}/empirics/input/crosswalks/cw_ctygrp1980_czone/cw_ctygrp1980_czone_corr.dta", unmatched(both) _merge(m1980)
 
 gen 	czwt = afactor * perwt
 
@@ -71,7 +71,7 @@ keep if year==1990
 
 gen 	puma1990 = 10000*statefip + puma 
 
-joinby 	puma1990 using "$ROOT\empirics\input\crosswalks\cw_puma1990_czone\cw_puma1990_czone.dta", unmatched(both) _merge(m1990)
+joinby 	puma1990 using "${DATA}/empirics/input/crosswalks/cw_puma1990_czone/cw_puma1990_czone.dta", unmatched(both) _merge(m1990)
 
 gen 	czwt = afactor * perwt
 
@@ -87,7 +87,7 @@ keep if year==2000
 
 gen 	puma2000 = 10000*statefip + puma
 
-joinby 	puma2000 using "$ROOT\empirics\input\crosswalks\cw_puma2000_czone\cw_puma2000_czone.dta", unmatched(both) _merge(m2000)
+joinby 	puma2000 using "${DATA}/empirics/input/crosswalks/cw_puma2000_czone/cw_puma2000_czone.dta", unmatched(both) _merge(m2000)
 
 gen 	czwt = afactor * perwt
 
@@ -141,7 +141,7 @@ replace housingcost = 12*rentgrs if ownershpd==22
 *****************************
 ** 6) Manually merge some CZs
 
-do		"$ROOT/empirics/code/build/0A_czone_mergers.do"
+do		"${DGIT}/code/build/0A_czone_mergers.do"
 
 
 *****************************
@@ -188,6 +188,6 @@ egen 	yrcz 	 = group(year czone)
 ** SAVE
 
 compress
-save "$ROOT\empirics\output\ipums_prepped_1980-2000", replace
+save "${DATA}/empirics/output/ipums_prepped_1980-2000", replace
 clear
 

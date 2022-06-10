@@ -21,7 +21,7 @@ clear
 /* There are a lot of very small weights --> better to set those to 0 */
 
 
-use		"$ROOT\empirics\input\crosswalks\cw_puma2010_czone\cw_puma2010_czone.dta", clear
+use		"${DATA}/empirics/input/crosswalks/cw_puma2010_czone/cw_puma2010_czone.dta", clear
 
 bys puma2010: egen puma2010_totalpre = sum(afactor)
 sum afactor, d
@@ -42,7 +42,7 @@ save	"`cx2010'", replace
 *****************************
 ** 0) Create narrow dataset
 
-use		"$ROOT\empirics\input\ipums_pwpumas\ipums_pwpumas.dta", clear
+use		"${DATA}/empirics/input/ipums_pwpumas/ipums_pwpumas.dta", clear
 drop if pwpuma00==0 | pwpuma00==1 /* not identifieable, N/A, or didn't work in US/PR */
 drop if pwpuma==0 | pwpuma==999   /* N/A or abroad */
 
@@ -55,8 +55,8 @@ tempfile workpuma
 save "`workpuma'", replace
 
 clear
-use		"$ROOT\empirics\input\ipums01-18\ipums2001-2018_race_vars.dta"
-append using "$ROOT\empirics\input\ipums19\ipums19.dta"
+use		"${DATA}/empirics/input/ipums01-18/ipums2001-2018_race_vars.dta"
+append using "${DATA}/empirics/input/ipums19/ipums19.dta"
 
 keep if empstatd==10 | empstatd==14 /* Much faster if only consider people with trantime */
 
@@ -83,7 +83,7 @@ keep if year >= 2002 & year <= 2011
 
 gen 	puma2000 = 10000*statefip + puma
 
-joinby 	puma2000 using "$ROOT\empirics\input\crosswalks\cw_puma2000_czone\cw_puma2000_czone.dta", unmatched(both) _merge(m2000)
+joinby 	puma2000 using "${DATA}/empirics/input/crosswalks/cw_puma2000_czone/cw_puma2000_czone.dta", unmatched(both) _merge(m2000)
 tab 	m2000
 
 gen 	czwt = afactor * perwt
@@ -159,7 +159,7 @@ replace housingcost = 12*rentgrs if ownershpd==22
 *****************************
 ** 6) Manually merge some CZs
 
-do		"$ROOT/empirics/code/build/0A_czone_mergers.do"
+do		"${DGIT}/code/build/0A_czone_mergers.do"
  
 *****************************
 ** 7) Real dollars
@@ -239,4 +239,4 @@ gegen 	yrcz 	 = group(year czone)
 
 compress
 
-save "$ROOT\empirics\output\ipums_prepped_2001-2019", replace
+save "${DATA}/empirics/output/ipums_prepped_2001-2019", replace

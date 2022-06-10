@@ -10,11 +10,11 @@ First Regressions:
 
 clear all
 
-use "${ROOT}/empirics/data/ipums_vars_standardized.dta", clear
+use "${DATA}/empirics/data/ipums_vars_standardized.dta", clear
 set scheme plotplainblind
 
 // Specify rsample
-do		"$ROOT/empirics/code/analysis/parse_sample.do"
+do		"${DGIT}/code/analysis/parse_sample.do"
 
 drop racamind racasian racblk racpacis racwht racnum trantime czwt_tt_orig d_hisp d_aapi d_amin samp_blw samp_hiw samp_aaw samp_aiw d_completed_college d_completed_high_school d_southern_state age_bin d_white sex 
 

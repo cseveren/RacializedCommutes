@@ -2,7 +2,7 @@
 clear
 cls
 
-import delimited "$ROOT\empirics\input\nhgis\data\all_1980.csv"
+import delimited "$DATA/empirics/input/nhgis/data/all_1980.csv"
 
 tostring year, replace
 
@@ -29,7 +29,7 @@ save "`1980'", replace
 
 clear
 
-import delimited "$ROOT\empirics\input\nhgis\data\all_1990.csv"
+import delimited "$DATA/empirics/input/nhgis/data/all_1990.csv"
 
 tostring year, replace
 
@@ -38,7 +38,7 @@ save "`1990'", replace
 
 clear
 
-import delimited "$ROOT\empirics\input\nhgis\data\all_2000.csv"
+import delimited "$DATA/empirics/input/nhgis/data/all_2000.csv"
 
 tostring year, replace
 
@@ -47,19 +47,19 @@ save "`2000'", replace
 
 clear
 
-import delimited "$ROOT\empirics\input\nhgis\data\acs_2006_2010.csv"
+import delimited "$DATA/empirics/input/nhgis/data/acs_2006_2010.csv"
 
 tempfile acs_2006_2010
 save "`acs_2006_2010'"
 
 clear
 
-import delimited "$ROOT\empirics\input\nhgis\data\acs_2014_2018.csv"
+import delimited "$DATA/empirics/input/nhgis/data/acs_2014_2018.csv"
 
 append using "`acs_2006_2010'"
 append using "`2000'"
 append using "`1990'"
 append using "`1980'", force
 
-// save "$ROOT\empirics\input\nhgis\data\demographic_housing_data"
+/* save "$ROOT/input/nhgis/data/demographic_housing_data" */
 

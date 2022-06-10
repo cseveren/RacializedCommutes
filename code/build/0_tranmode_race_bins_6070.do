@@ -1,4 +1,4 @@
-use		"$ROOT\empirics\input\ipums60-70\ipums1960-1970.dta", clear
+use		"${DATA}/empirics/input/ipums60-70/ipums1960-1970.dta", clear
 
 drop serial region statefip puma gqtype gqtyped farm ownershp ///	
 			ownershpd rentgrs costelec costgas costwatr costfuel ///
@@ -58,5 +58,5 @@ collapse (mean) modeshare_* [aw=perwt], by(year race_bin)
 keep if race_bin==1 | race_bin==2
 gen d_black=(race_bin==2)
 
-save 	"$ROOT/empirics/output/modeshare_1960_1970.dta", replace
+save 	"${DATA}/empirics/output/modeshare_1960_1970.dta", replace
 clear

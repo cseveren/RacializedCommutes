@@ -9,9 +9,9 @@
 
 ** 0) Set up
 
-use "$ROOT\empirics\output\ipums_prepped_2001-2019", clear
+use "${DATA}/empirics/output/ipums_prepped_2001-2019", clear
 
-append using "$ROOT\empirics\output\ipums_prepped_1980-2000.dta", gen(source)
+append using "${DATA}/empirics/output/ipums_prepped_1980-2000.dta", gen(source)
 
 recast float inctot ftotinc incwage, force
 
@@ -114,13 +114,13 @@ drop hhwt hhtype statefip puma gq farm ownershpd mortgage rentgrs hhincome ncoup
 ** 5) Additional var creation + add in div indicators
 *******************************
 
-do 	"$ROOT/empirics/code/build/1A_additional_var_prep.do"
+do 	"${DGIT}/code/build/1A_additional_var_prep.do"
 
 drop educ educd tranwork incwage yrcz nchild marst relate 
 
 preserve
 
-	use "$ROOT/empirics/input/crosswalks/cw_czone_division/cw_czone_division.dta", clear
+	use "${DATA}/empirics/input/crosswalks/cw_czone_division/cw_czone_division.dta", clear
 
 	gen division = 0
 	replace division = 1 if reg_neweng==1
@@ -189,4 +189,4 @@ compress
 drop if mi(czone)
 
 
-save "$ROOT\empirics\output\ipums_vars_standardized", replace
+save "${DATA}/empirics/output/ipums_vars_standardized", replace
