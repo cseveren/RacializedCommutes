@@ -53,9 +53,10 @@ do		"${DGIT}/code/build/1_ipums_combine_clean.do" 	/* Calls ./1A_additional_var_
 
 
 ** MAKE NEW FILE THAT DOES ALL REGS TOGETHER
-czeffect_1
 
+do		"${DGIT}/code/analysis/czeffect_1.do" /* Calls ./czeffect_1regs.do */
 
+**
 do		"${DGIT}/code/analysis/regs.do"  				/* Create /data/ipums_smaller.csv for R use */	
 /*Note: Also execute ../regs.R for regs too large for Stata  */
 do		"${DGIT}/code/analysis/graphs.do" 			

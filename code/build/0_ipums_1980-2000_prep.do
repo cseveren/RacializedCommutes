@@ -18,8 +18,8 @@ clear
 ** 0) Create narrow dataset with PWPUMAs
 
 use		"${DATA}/empirics/input/ipums_pwpumas/ipums_pwpumas.dta"
-drop if pwpuma00==0 | pwpuma00==1 /* not identifieable, N/A, or didn't work in US/PR */
-drop if pwpuma==0 | pwpuma==999   /* N/A or abroad */
+replace pwpuma00=. if pwpuma00==0 | pwpuma00==1 /* not identifieable, N/A, or didn't work in US/PR */
+replace pwpuma=.  if pwpuma==0 | pwpuma==999   /* N/A or abroad */
 
 gen 	powpuma = pwpuma00
 replace powpuma = pwpuma if mi(pwpuma00)
@@ -32,7 +32,7 @@ clear
 
 use		"${DATA}/empirics/input/ipums80-00_2/ipums1980-2000_all.dta"
 
-keep if empstatd==10 | empstatd==14 /* Much faster if only consider people with trantime */
+drop if age<18 //** NEED NILF FOR LFP SELECTION keep if empstatd==10 | empstatd==14 /* Much faster if only consider people with trantime */
 
 merge 1:1 year sample serial pernum using "`workpuma'"
 drop if _merge==2

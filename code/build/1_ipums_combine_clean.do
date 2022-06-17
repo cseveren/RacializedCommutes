@@ -108,7 +108,7 @@ compress
 *******************************
 drop if czwt_tt==0 | czwt_tt==.
 
-drop hhwt hhtype statefip puma gq farm ownershpd mortgage rentgrs hhincome ncouples multgen multgend perwt famsize nchlt5 related birthyr race hispan bpl citizen yrimmig speakeng racesing racesingd empstat empstatd labforce wkswork2 inctot uhrswork movedin sample cluster strata ownershp workedyr czwt migsamp ftotinc
+drop hhwt hhtype statefip puma gq farm ownershpd mortgage rentgrs hhincome ncouples multgen multgend perwt famsize nchlt5 related birthyr race hispan bpl citizen yrimmig speakeng racesing racesingd wkswork2 inctot uhrswork movedin sample cluster strata ownershp workedyr czwt migsamp ftotinc
  
 *******************************
 ** 5) Additional var creation + add in div indicators

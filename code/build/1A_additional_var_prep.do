@@ -1,4 +1,4 @@
-
+replace age = 90 if age>90 & !mi(age)
 
 capture gen ln_trantime = ln(trantime)
 capture gen age2 = age^2
