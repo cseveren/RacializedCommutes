@@ -23,7 +23,7 @@ keep if samp_blw==1
 keep if empstat==1
 
 
-frames create resultsto czone year_bin b_resid dcz ddemog dtran dwork
+frames create resultsto czone year_bin b_resid dcz ddemog dtran dwork b0alt
 /* Approach:
 foreach czone_year_bin
 	1. Estimate big/full regression
@@ -47,45 +47,43 @@ foreach var in female educ_bin age age2 d_marr d_head child_1or2 child_gteq3 tra
 ** WORKING
 gen one=1
 
+sum d_black
+display `r(mean)'
 reghdfe ln_trantime one [aw=czwt_tt], a(test1=i.czone_year_bin#c.d_black) vce(cluster czone)
-b_`group' = _b[d_black]
-*reghdfe ln_trantime [aw=czwt_tt], a(i.czone_year_bin test2=i.czone_year_bin#c.d_black) vce(cluster czone)
+gen shifter = _b[one]
+gen sh_ln_trantime = ln_trantime-shifter
+drop if e(sample)!=1
+
 
 preserve 
 	keep if year==1980
 	keep if d_black==1
 	collapse (mean) test1Slope1 (sum) czwt_tt, by(czone year_bin czone_year_bin)
-	*collapse (mean) test1Slope1 test2Slope1 (sum) czwt_tt, by(czone year_bin czone_year_bin)
 
 	drop czone_year_bin
 	
 	rename test1Slope1 b0
-	rename test2Slope1 dcz_alt
 	rename czwt_tt czpop
 	
 	tempfile aggresults
 	save "`aggresults'", replace
-restore
-drop one	
+restore 
+drop one shifter	
 	
 ** END WORKING
-
-
-* demean major variables by year!
-*bys year_bin: center ln_trantime [aw=czwt_tt], gen(c_lntt)
-*bys year_bin: center d_black [aw=czwt_tt], gen(c_black)
 
 * useful macros
 local demog female i.educ_bin age age2 d_marr d_head child_1or2 child_gteq3
 local transpo i.tranwork_bin
 local work linc inczero 
 
-*levelsof czone, local(czlist)
-*display `czlist'
-local czlist 100 200 301 302 401 402 500
+levelsof czone, local(czlist)
+display `czlist'
+
+quietly {
 foreach cz of local czlist {
 
-	foreach y in 1980 { //1990 2000 2010 2019 {
+	foreach y in 1980 1990 2000 2010 2019 {
 
 		preserve
 			keep if year_bin==`y' & czone==`cz'
@@ -94,14 +92,19 @@ foreach cz of local czlist {
 			** Step 1-2: run reghdfe on full sample to estimate pooled betas, saving FEs and everything
 
 			* run main model
-			reghdfe ln_trantime d_black `demog' `transpo' `work' [aw=czwt_tt], ///
+			reghdfe sh_ln_trantime d_black `demog' `transpo' `work' [aw=czwt_tt], ///
 				a(beta_ind1990=ind1990 beta_occ1990=occ1990) vce(robust)
 				*a(beta_czone_year_bin=czone_year_bin beta_ind1990=ind1990 beta_occ1990=occ1990) vce(cluster czone)
 				
 			keep if e(sample)==1
 			
 			local b1 = _b[d_black]
-			*local beta_cons = _b[_cons]
+			local a_cons = _b[_cons]
+			
+			sum d_black [aw=czwt_tt]
+			local mult=1/(1-`r(mean)')
+			local b_cz = `mult'*`a_cons' // Note this will only "kind of work" bc which categories are omitted might change across regs...
+			
 			foreach var in female age age2 d_marr d_head child_1or2 child_gteq3 linc inczero { 
 				capture replace beta_`var' = _b[`var']
 			}
@@ -136,91 +139,26 @@ foreach cz of local czlist {
 
 			** Step 4:
 			foreach group in demographics transit work {	
-				reg xb_`group' d_black [aw=czwt_tt], robust
+				reg xb_`group' d_black [aw=czwt_tt], robust noconstant
 				local b_`group' = _b[d_black]
 			}
 			
-			reg ln_trantime d_black [aw=czwt_tt], robust
-			local b_cz = _b[d_black]
+			*reg ln_trantime d_black [aw=czwt_tt], robust
+			*local b_cz = _b[d_black]
+			
+			reg sh_ln_trantime d_black [aw=czwt_tt], noconstant robust
+			local b0 = _b[d_black]
 
-			frame post resultsto (`cz') (`y') (`b1') (`b_cz') (`b_demographics') (`b_transit') (`b_work')
+			frame post resultsto (`cz') (`y') (`b1') (`b_cz') (`b_demographics') (`b_transit') (`b_work') (`b0')
 			est clear
 
 		restore
 	}
+}
 }
 
 frame change resultsto
 
 merge 1:1 czone year_bin using "`aggresults'"
 
-
-
-
-
-
-
-/* Richer interactions do not play a huge role in determining commute time differentials, at most 0.002
-sample 10
-** Macros for covariates
-local demog 	female i.educ_bin d_marr d_head child_1or2 child_gteq3 age age2
-local demog2 	female i.educ_bin d_marr d_head child_1or2 child_gteq3 1.female#i.educ_bin 1.female#1.d_marr 1.female#1.d_head 1.female#1.child_1or2 1.female#1.child_gteq3 age age2 
-local transpo	i.tranwork_bin
-local work		linc i.inczero 
-	/* work also includes ind1990 and occ1990 as absorbed FEs */	
-	
-reghdfe ln_trantime 1.d_black#i.year_bin `demog' `transpo' `work' [aw=czwt_tt], a(czone_year_bin ind1990 occ1990)
-gen es1 = e(sample)
-
-reghdfe ln_trantime 1.d_black#i.year_bin `demog2' `transpo' `work' [aw=czwt_tt], a(czone_year_bin ind1990 occ1990)
-gen es2 = e(sample)
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-do "${DGIT}/code/analysis/czeffects_1regs.do" d_black samp_blw blackwhite_all
-
-est clear
-foreach n in 10 30 36 37 50 60 70 {
-	use "${DATA}/empirics/data/ipums_vars_standardized.dta", clear
-
-	keep if tranwork_bin == `n'
-
-	if `n' == 10 {
-		local mode = "car"
-	}
-	if `n' == 30 {
-		local mode = "bus"
-	}
-	if `n' == 36 {
-		local mode = "subway"
-	}
-	if `n' == 37 {
-		local mode = "railroad"
-	}
-	if `n' == 50 {
-		local mode = "bike"
-	}
-	if `n' == 60 {
-		local mode = "walk"
-	}
-	if `n' == 70 {
-		local mode = "other"
-	}
-
-	do "${DGIT}/code/analysis/czeffects_1regs.do" d_black samp_blw blackwhite_`mode'
-	est clear
-}
 
