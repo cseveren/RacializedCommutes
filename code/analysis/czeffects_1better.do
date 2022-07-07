@@ -45,30 +45,23 @@ foreach var in female educ_bin age age2 d_marr d_head child_1or2 child_gteq3 tra
 }
 
 ** WORKING
-gen one=1
-
-sum d_black
-display `r(mean)'
-reghdfe ln_trantime one [aw=czwt_tt], a(test1=i.czone_year_bin#c.d_black) vce(cluster czone)
-gen shifter = _b[one]
+reghdfe ln_trantime [aw=czwt_tt], a(czbl=i.czone_year_bin#c.d_black shifter=i.year_bin) vce(cluster czone) noconstant
 gen sh_ln_trantime = ln_trantime-shifter
 drop if e(sample)!=1
 
-
 preserve 
-	keep if year==1980
 	keep if d_black==1
-	collapse (mean) test1Slope1 (sum) czwt_tt, by(czone year_bin czone_year_bin)
+	collapse (mean) czblSlope1 (sum) czwt_tt, by(czone year_bin czone_year_bin)
 
 	drop czone_year_bin
 	
-	rename test1Slope1 b0
+	rename czblSlope1 b0
 	rename czwt_tt czpop
 	
 	tempfile aggresults
 	save "`aggresults'", replace
 restore 
-drop one shifter	
+drop shifter	
 	
 ** END WORKING
 
@@ -78,7 +71,6 @@ local transpo i.tranwork_bin
 local work linc inczero 
 
 levelsof czone, local(czlist)
-display `czlist'
 
 quietly {
 foreach cz of local czlist {
@@ -161,4 +153,9 @@ frame change resultsto
 
 merge 1:1 czone year_bin using "`aggresults'"
 
+save "${DATA}/empirics/output/cz_specific_estimates.dta", replace
 
+bys year_bin: sum b0 [aw = czpop]
+bys year_bin: sum b0 [aw = czpop], d
+
+bys year_bin: sum b_resid d* [aw = czpop]
