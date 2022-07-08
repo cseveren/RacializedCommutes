@@ -59,6 +59,18 @@ est clear
 
 ** Main Table: Year Coefficients + Interactions
 
+gegen puma_yrbncz = group(puma_yrbn czone) // Ensures pumas are within CZs (they should be, but areal merges mess with that)
+
+compress
+drop empstatd labforce  
+
+preserve 
+	drop  tranwork_bin linc inczero ind1990 occ1990 division pwpumast pwpuma_yr puma_yrbn puma_yr puma_yrbncz housingcost valueh
+	export delim using "${DATA}/empirics/data/ipums_smaller_lfp.csv", replace nolab
+restore	
+	
+keep if empstat==1 
+
 gen other8 = 0
 gen transit8 = 0
 
@@ -140,14 +152,10 @@ replace no_variety = 1 if (czone==37800 | /// SF
 						czone==35100) // Tucson
 							
 						
-egen puma_yrbncz = group(puma_yrbn czone) // Ensures pumas are within CZs (they should be, but areal merges mess with that)
 
-compress
 
-drop empstatd valueh housingcost labforce
-
-save "${DATA}/empirics/data/ipums_smaller.dta", replace
-*export delim using "${DATA}/empirics/data/ipums_smaller.csv", replace nolab
+*save "${DATA}/empirics/data/ipums_smaller.dta", replace
+export delim using "${DATA}/empirics/data/ipums_smaller.csv", replace nolab
 
 /* This is implemented in R for faster execution
 preserve

@@ -12,10 +12,11 @@ library(fixest)  # v 0.10.0
 library(broom)  # v 0.7.4
 library(tidyverse)  # v 1.3.0 
 library(data.table)
+library(haven)
 
 ##########################################
 
-ipums <- fread("./empirics/data/ipums_smaller.csv")
+ipums <- as.data.table(read_dta("./empirics/data/ipums_smaller.dta"))
 
 
 ##  Full Models by Year, CZFEs
