@@ -58,6 +58,9 @@ lab def tranwork_1b 10 "Private Motor Vehicle" 30 "Bus or Streetcar" ///
 
 lab val tranwork_bin tranwork_1b	
 
+gen byte d_vehinhh = (vehicles>=1) if !mi(vehicles)
+drop vehicles
+
 ** OTHER DEMOGRAPHICS **
 
 //gender

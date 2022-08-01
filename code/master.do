@@ -39,6 +39,7 @@ set scheme plotplainblind
 
 *** DATA CONSTRUCTION ***
 do 		"${DGIT}/code/build/0_tranmode_race_bins_6070.do" /* Constructs 1960 and 1970 mode shares by race */
+do 		"${DGIT}/code/build/0_ipums_carinhh.do" /* Constructs number of cars in hh */
 do		"${DGIT}/code/build/0_ipums_1980-2000_prep.do"	/* Calls ./0A_czone_mergers.do */
 do		"${DGIT}/code/build/0_ipums_2001-2019_prep.do"	/* Calls ./0A_czone_mergers.do */
 do		"${DGIT}/code/build/1_ipums_combine_clean.do" 	/* Calls ./1A_additional_var_prep.do */

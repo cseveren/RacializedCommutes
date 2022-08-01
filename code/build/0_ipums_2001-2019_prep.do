@@ -40,7 +40,7 @@ tempfile cx2010
 save	"`cx2010'", replace
 
 *****************************
-** 0) Create narrow dataset
+** 0) Create narrow dataset with PWPUMAs and cars in HH
 
 use		"${DATA}/empirics/input/ipums_pwpumas/ipums_pwpumas.dta", clear
 replace pwpuma00=. if pwpuma00==0 | pwpuma00==1 /* not identifieable, N/A, or didn't work in US/PR */
@@ -61,6 +61,11 @@ append using "${DATA}/empirics/input/ipums19/ipums19.dta"
 drop if age<18 //** NEED NILF FOR LFP SELECTION keep if empstatd==10 | empstatd==14 /* Much faster if only consider people with trantime */
 
 merge 1:1 year sample serial pernum using "`workpuma'"
+drop if _merge==2
+
+drop _merge
+
+merge 1:1 year sample serial pernum using "${DATA}/empirics/output/carinhh.dta"
 drop if _merge==2
 
 drop 	_merge serial region gqtype gqtyped propinsr proptx99 ///

@@ -22,12 +22,6 @@ drop racamind racasian racblk racpacis racwht racnum trantime czwt_tt_orig d_his
 
 est clear
 
-*preserve  // can we run the by mode part using the entire sample?
-*set seed 9483
-*sample 10
-
-reghdfe ln_trantime d_black [aw=czwt_tt], a(year_bin) vce(cluster czone)
-
 gen ln_trantime_q99 = ln_trantime
 replace ln_trantime_q99 = ln(99) if empstat!=1
 

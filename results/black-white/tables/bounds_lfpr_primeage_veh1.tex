@@ -1,0 +1,35 @@
+\begin{tabular}{lcccccc}
+\tabularnewline\midrule\midrule
+Dependent Variables:&ln\_trantime&ln\_trantime\_czq95&ln\_trantime&ln\_trantime\_czq95&ln\_trantime&ln\_trantime\_czq95\\
+Model:&(1) & (2) & (3) & (4) & (5) & (6)\\
+\midrule \emph{Variables}&   &   &   &   &   &  \\
+$1[\text{Black}] \times t_{1980}$ & 0.226$^{***}$ & 0.169$^{***}$ & 0.143$^{***}$ & 0.104$^{***}$ & 0.155$^{***}$ & 0.084$^{***}$\\
+  &(0.015) & (0.012) & (0.010) & (0.009) & (0.012) & (0.011)\\
+$1[\text{Black}] \times t_{1990}$ & 0.152$^{***}$ & 0.158$^{***}$ & 0.072$^{***}$ & 0.095$^{***}$ & 0.085$^{***}$ & 0.076$^{***}$\\
+  &(0.019) & (0.015) & (0.013) & (0.010) & (0.015) & (0.012)\\
+$1[\text{Black}] \times t_{2000}$ & 0.142$^{***}$ & 0.191$^{***}$ & 0.060$^{***}$ & 0.119$^{***}$ & 0.070$^{***}$ & 0.106$^{***}$\\
+  &(0.019) & (0.015) & (0.013) & (0.009) & (0.014) & (0.010)\\
+$1[\text{Black}] \times t_{2005--11}$ & 0.114$^{***}$ & 0.133$^{***}$ & 0.037$^{***}$ & 0.071$^{***}$ & 0.050$^{***}$ & 0.065$^{***}$\\
+  &(0.020) & (0.014) & (0.012) & (0.007) & (0.012) & (0.008)\\
+$1[\text{Black}] \times t_{2012--19}$ & 0.094$^{***}$ & 0.108$^{***}$ & 0.019$^{*}$ & 0.046$^{***}$ & 0.034$^{***}$ & 0.043$^{***}$\\
+  &(0.019) & (0.014) & (0.011) & (0.008) & (0.011) & (0.008)\\
+\midrule \emph{Fixed-effects}&   &   &   &   &   &  \\
+year\_bin & Yes & Yes &  &  & Yes & Yes\\
+czone\_year\_bin &  &  & Yes & Yes & Yes & Yes\\
+year\_bin-educ\_bin &  &  &  &  & Yes & Yes\\
+\midrule \emph{Varying Slopes}&   &   &   &   &   &  \\
+age (year\_bin) &  &  &  &  & Yes & Yes\\
+age2 (year\_bin) &  &  &  &  & Yes & Yes\\
+d\_marr (year\_bin) &  &  &  &  & Yes & Yes\\
+d\_head (year\_bin) &  &  &  &  & Yes & Yes\\
+child\_1or2 (year\_bin) &  &  &  &  & Yes & Yes\\
+child\_gteq3 (year\_bin) &  &  &  &  & Yes & Yes\\
+\midrule \emph{Fit statistics}&  & & & & & \\
+Observations & 30,721,775&39,112,243&30,721,775&39,112,243&30,721,775&39,112,243\\
+R$^2$ & 0.00968&0.00811&0.06396&0.05050&0.06782&0.06917\\
+Within R$^2$ & 0.00317&0.00325&0.00074&0.00106&0.00095&0.00078\\
+\midrule\midrule\multicolumn{7}{l}{\emph{Clustered (czone) standard-errors in parentheses}}\\
+\multicolumn{7}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+
+

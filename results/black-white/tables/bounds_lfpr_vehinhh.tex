@@ -1,0 +1,37 @@
+\begin{tabular}{lcccc}
+\tabularnewline\midrule\midrule
+Dependent Variables:&\multicolumn{2}{c}{ln\_trantime}&\multicolumn{2}{c}{ln\_trantime\_czq95}\\
+Model:&(1) & (2) & (3) & (4)\\
+\midrule \emph{Variables}&   &   &   &  \\
+$1[\text{Black}] \times t_{1980}$ & 0.188$^{***}$ & 0.182$^{***}$ & 0.160$^{***}$ & 0.126$^{***}$\\
+  &(0.016) & (0.012) & (0.012) & (0.010)\\
+$1[\text{Black}] \times t_{1990}$ & 0.120$^{***}$ & 0.114$^{***}$ & 0.154$^{***}$ & 0.113$^{***}$\\
+  &(0.021) & (0.018) & (0.013) & (0.011)\\
+$1[\text{Black}] \times t_{2000}$ & 0.105$^{***}$ & 0.100$^{***}$ & 0.171$^{***}$ & 0.129$^{***}$\\
+  &(0.020) & (0.018) & (0.010) & (0.010)\\
+$1[\text{Black}] \times t_{2005--11}$ & 0.087$^{***}$ & 0.082$^{***}$ & 0.130$^{***}$ & 0.098$^{***}$\\
+  &(0.019) & (0.017) & (0.010) & (0.010)\\
+$1[\text{Black}] \times t_{2012--19}$ & 0.068$^{***}$ & 0.063$^{***}$ & 0.102$^{***}$ & 0.073$^{***}$\\
+  &(0.017) & (0.015) & (0.010) & (0.010)\\
+\midrule \emph{Fixed-effects}&   &   &   &  \\
+czone\_year\_bin & Yes & Yes & Yes & Yes\\
+year\_bin-educ\_bin & Yes & Yes & Yes & Yes\\
+year\_bin & Yes & Yes & Yes & Yes\\
+\midrule \emph{Varying Slopes}&   &   &   &  \\
+female (year\_bin) & Yes & Yes & Yes & Yes\\
+age (year\_bin) & Yes & Yes & Yes & Yes\\
+age2 (year\_bin) & Yes & Yes & Yes & Yes\\
+d\_marr (year\_bin) & Yes & Yes & Yes & Yes\\
+d\_head (year\_bin) & Yes & Yes & Yes & Yes\\
+child\_1or2 (year\_bin) & Yes & Yes & Yes & Yes\\
+child\_gteq3 (year\_bin) & Yes & Yes & Yes & Yes\\
+d\_vehinhh (year\_bin) &  & Yes &  & Yes\\
+\midrule \emph{Fit statistics}&  & & & \\
+Observations & 47,952,072&47,394,194&85,623,355&81,843,250\\
+R$^2$ & 0.07971&0.07820&0.16219&0.16522\\
+Within R$^2$ & 0.00194&0.00174&0.00319&0.00175\\
+\midrule\midrule\multicolumn{5}{l}{\emph{Clustered (czone) standard-errors in parentheses}}\\
+\multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+
+

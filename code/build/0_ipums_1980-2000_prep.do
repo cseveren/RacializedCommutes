@@ -15,7 +15,7 @@ clear
 *****************************/
 
 *****************************
-** 0) Create narrow dataset with PWPUMAs
+** 0) Create narrow dataset with PWPUMAs and cars in HH
 
 use		"${DATA}/empirics/input/ipums_pwpumas/ipums_pwpumas.dta"
 replace pwpuma00=. if pwpuma00==0 | pwpuma00==1 /* not identifieable, N/A, or didn't work in US/PR */
@@ -32,9 +32,14 @@ clear
 
 use		"${DATA}/empirics/input/ipums80-00_2/ipums1980-2000_all.dta"
 
+drop if year>=2001 & year<=2004
 drop if age<18 //** NEED NILF FOR LFP SELECTION keep if empstatd==10 | empstatd==14 /* Much faster if only consider people with trantime */
 
 merge 1:1 year sample serial pernum using "`workpuma'"
+drop if _merge==2
+drop _merge
+
+merge 1:1 year sample serial pernum using "${DATA}/empirics/output/carinhh.dta"
 drop if _merge==2
 
 drop 	_merge serial region gqtype gqtyped proptxin propinsr proptx99 ///
