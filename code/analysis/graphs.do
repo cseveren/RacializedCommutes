@@ -24,6 +24,8 @@ set scheme plotplainblind
 // Specify rsample
 do		"$ROOT/empirics/code/analysis/parse_sample.do"
 
+keep if empstat==1
+
 /*------------------------------------------------------------------------------
 	Unconditional plots of raw data
 ------------------------------------------------------------------------------*/

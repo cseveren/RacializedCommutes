@@ -54,8 +54,10 @@ do		"${DGIT}/code/build/1_ipums_combine_clean.do" 	/* Calls ./1A_additional_var_
 
 do		"${DGIT}/code/analysis/regs.do"  				/* Create /data/ipums_smaller.csv for R use */	
 /*Note: Also execute ../regs.R for regs too large for Stata  */
+do		"${DGIT}/code/analysis/lfpr.do"  	
 do		"${DGIT}/code/analysis/graphs.do" 			
 do		"${DGIT}/code/analysis/income.do"
+do		"${DGIT}/code/analysis/graphs_carinhh.do" 		
 
 ****do		"${DGIT}/code/analysis/decomposition.do" Only for trials,
 /*Note: Also execute .../decomps.R for decomps too large for Stata */
