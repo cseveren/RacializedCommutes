@@ -1,6 +1,6 @@
 * 2CALT
 
-use "${ROOT}\empirics\data\ipums_vars_standardized.dta", clear
+use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
 
 ** DO NOT OMIT OUT OF SAMPLE, AS THESE ARE AGGREGATE VARIABLES **
 
@@ -42,43 +42,43 @@ collapse (rawsum) czwt_tt n_obs n_black=d_black popemp_black=czwt_tt_black (mean
 
 rename czwt_tt popemp
 
-save "$ROOT/empirics/output/czyr_averages.dta", replace
+save "${DATA}/empirics/output/czyr_averages.dta", replace
 
 clear
 
 ***********************
 
-use "$ROOT/empirics/input/urban_form/CentralityOG.dta", clear
+use "${DATA}/empirics/input/urban_form/CentralityOG.dta", clear
 replace year=2019 if year==2018
 tempfile centrality
 save "`centrality'", replace
 
-use "$ROOT/empirics/input/urban_form/Centrality2.dta", clear
+use "${DATA}/empirics/input/urban_form/Centrality2.dta", clear
 replace year=2019 if year==2018
 tempfile centrality2
 save "`centrality2'", replace
 
-use "$ROOT/empirics/input/urban_form/Segregation.dta", clear
+use "${DATA}/empirics/input/urban_form/Segregation.dta", clear
 replace year=2019 if year==2018
 tempfile segregation
 save "`segregation'", replace
 
-use "$ROOT/empirics/input/urban_form/comm_hval_all.dta", clear
+use "${DATA}/empirics/input/urban_form/comm_hval_all.dta", clear
 drop if year==2018
 rename corr comm_hval_corr_obs
 tempfile corrs1
 save "`corrs1'", replace
 
-use "$ROOT/empirics/input/urban_form/comm_hval_all_est.dta", clear
+use "${DATA}/empirics/input/urban_form/comm_hval_all_est.dta", clear
 drop if year==2018
 rename corr comm_hval_corr_est
 tempfile corrs2
 save "`corrs2'", replace
 
-use "$ROOT/empirics/input/urban_form/GiniEmp1990.dta", clear
-append using "$ROOT/empirics/input/urban_form/GiniEmp2000.dta"
-append using "$ROOT/empirics/input/urban_form/GiniEmp2010.dta"
-append using "$ROOT/empirics/input/urban_form/GiniEmp2018.dta"
+use "${DATA}/empirics/input/urban_form/GiniEmp1990.dta", clear
+append using "${DATA}/empirics/input/urban_form/GiniEmp2000.dta"
+append using "${DATA}/empirics/input/urban_form/GiniEmp2010.dta"
+append using "${DATA}/empirics/input/urban_form/GiniEmp2018.dta"
 replace year=2019 if year==2018
 tempfile ginis
 save "`ginis'", replace
@@ -86,10 +86,10 @@ save "`ginis'", replace
 
 foreach ff in blacknonblack blackwhite {
 	
-	use "$ROOT/empirics/output/czyrcoeffs_`ff'_all.dta"
+	use "${DATA}/empirics/output/czyrcoeffs_`ff'_all.dta"
 	*use "$ROOT/empirics/output/czyrcoeffs_blackwhite_all.dta"
 	
-	merge 1:1 czone_year_bin using  "$ROOT/empirics/output/czyr_averages.dta"
+	merge 1:1 czone_year_bin using  "${DATA}/empirics/output/czyr_averages.dta"
 	drop _merge
 		/* NOTE: Cities that are in using only have no Black residents, or Black is collinear with another base variables */
 	replace czone = floor(czone_year_bin/10000) if mi(czone)
@@ -136,10 +136,10 @@ foreach ff in blacknonblack blackwhite {
 	drop if _merge==2
 	drop _merge
 	
-	merge 1:1 czone year using "${ROOT}/empirics/output/gurenIV.dta"
+	merge 1:1 czone year using "${DATA}/empirics/output/gurenIV.dta"
 	drop _merge
 	
-	merge 1:1 czone year using "${ROOT}/empirics/input/highways/highways.dta"
+	merge 1:1 czone year using "${DATA}/empirics/input/highways/highways.dta"
 // 	foreach v of varlist fira firb lena lenb lenc lenp {
 // 		replace `v' = 0 if _merge==1 & year==1980 
 // 		replace `v' = 0 if _merge==1 & year==1990 
@@ -150,6 +150,6 @@ foreach ff in blacknonblack blackwhite {
 	order 	czone year largestcity ruralurbancont1993 pop1990 popemp min_popemp n_obs min_n_obs perc_black min_perc_black n_black min_n_black popemp_black
 	sort czone year
 
-	save "$ROOT/empirics/output/czyrall_`ff'.dta", replace
-	export delim using "$ROOT/empirics/output/czyrall_`ff'.csv", replace
+	save "${DATA}/empirics/output/czyrall_`ff'.dta", replace
+	export delim using "${DATA}/empirics/output/czyrall_`ff'.csv", replace
 }

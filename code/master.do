@@ -55,15 +55,17 @@ do		"${DGIT}/code/build/1_ipums_combine_clean.do" 	/* Calls ./1A_additional_var_
 do		"${DGIT}/code/analysis/regs.do"  				/* Create /data/ipums_smaller.csv for R use */	
 /*Note: Also execute ../regs.R for regs too large for Stata  */
 do		"${DGIT}/code/analysis/lfpr.do"  	
-do		"${DGIT}/code/analysis/graphs.do" 			
-do		"${DGIT}/code/analysis/income.do"
+do		"${DGIT}/code/analysis/graphs.do" 	
 do		"${DGIT}/code/analysis/graphs_carinhh.do" 		
+do		"${DGIT}/code/analysis/income.do"
+do		"${DGIT}/code/analysis/bigcity-diffs.do"
+		
 
 ****do		"${DGIT}/code/analysis/decomposition.do" Only for trials,
 /*Note: Also execute .../decomps.R for decomps too large for Stata */
 /*Note: Also execute .../decomps_respowtran.R for alternative decomp */
 do		"${DGIT}/code/analysis/decomposition_yearbins.do"
-do		"${DGIT}/code/analysis/decomps_powrespuma.do"
+*do		"${DGIT}/code/analysis/decomps_powrespuma.do" and _puma
 
 do		"${DGIT}/code/analysis/czFEs_1_make_coefficients.do" /* Calls ./czFEs_1A_regs.do */
 do		"${DGIT}/code/analysis/czFEs_2_label_czs.do"
@@ -76,15 +78,6 @@ do		"${DGIT}/code/analysis/city-level_analysis.do" 	/* Calls ./city-level_prep.d
 do		"${DGIT}/code/analysis/city-level_graphs.do"		/* Calls ./city-level_prep.do */
 
 do		"${DGIT}/code/analysis/tract_regs.do" 	
-
-
-
-
-do		"${DGIT}/code/analysis/sample_cut_mode.do"		// UPDATE TO REPRESENT NEW TRANBIN NUMBERS
-do		"${DGIT}/code/analysis/sample_cut_southern.do"	// UPDATE TO REPRESENT NEW TRANBIN NUMBERS
-
-*** City Characteristics Analysis *** UPDATE THIS
-do		"${DGIT}/code/analysis/regs.do" 				// Double Check REPRESENTs NEW TRANBIN NUMBERS
 
 
 

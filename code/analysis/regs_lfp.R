@@ -13,7 +13,6 @@ library(fixest)  # v 0.10.0
 library(broom)  # v 0.7.4
 library(tidyverse)  # v 1.3.0 
 library(data.table)
-library(dplyr)
 
 myDict = c("d_black::1:year_bin::1980" = "$1[\\text{Black}] \\times t_{1980}$",
            "d_black::1:year_bin::1990" = "$1[\\text{Black}] \\times t_{1990}$",

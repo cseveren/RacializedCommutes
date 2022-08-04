@@ -1,7 +1,12 @@
+clear all
 
-use "${ROOT}\empirics\data\ipums_vars_standardized.dta", clear
+use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
+set scheme plotplainblind
 
-do		"$ROOT/empirics/code/analysis/parse_sample.do"
+// Specify sample
+do		"${DGIT}/code/analysis/parse_sample.do"
+
+keep if empstat==1
 
 gen other8 = 0
 gen transit8 = 0
@@ -52,18 +57,18 @@ keep if parm == "d_black"
 drop parmseq 
 gen czone = floor(czone_year_bin/10000)
 gen year = czone_year_bin-10000*czone
-save "$ROOT/empirics/output/czyrcoeffs_bigcities_nopuma.dta", replace
+save "${DATA}/empirics/output/czyrcoeffs_bigcities_nopuma.dta", replace
 
 use "`puma_coeffs'"
 keep if parm == "d_black"
 drop parmseq 
 gen czone = floor(czone_year_bin/10000)
 gen year = czone_year_bin-10000*czone
-save "$ROOT/empirics/output/czyrcoeffs_bigcities_puma.dta", replace
+save "${DATA}/empirics/output/czyrcoeffs_bigcities_puma.dta", replace
 
-use "$ROOT/empirics/output/czyrcoeffs_bigcities_nopuma.dta", clear
+use "${DATA}/empirics/output/czyrcoeffs_bigcities_nopuma.dta", clear
 rename estimate est_nopuma
-merge 1:1 czone_year_bin using "$ROOT/empirics/output/czyrcoeffs_bigcities_puma.dta", keepusing(estimate)
+merge 1:1 czone_year_bin using "${DATA}/empirics/output/czyrcoeffs_bigcities_puma.dta", keepusing(estimate)
 rename estimate est_puma
 drop stderr dof t p min95 max95 _merge
 
@@ -119,212 +124,7 @@ twoway (line est_nopuma year) || ///
 		by(czone, noixtick noiytick note("")) subtitle(, pos(12) margin(b=-6)) ///
 		ysize(6.5) xsize(5.5)
 
-graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/bigcity_changesovertime.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/bigcity_changesovertime.png", replace
 
-/* OLDER
-if "`cz'"=="19400" {
-	local czname = "NYC"
-}
-else if "`cz'"=="20500" {
-	local czname = "Bos."
-}
-else if "`cz'"=="24300" {
-	local czname = "Chic."
-}
-else if "`cz'"=="19700" {
-	local czname = "Phil."
-}
-else if "`cz'"=="11304" {
-	local czname = "DC"
-}
-else if "`cz'"=="37800" {
-	local czname = "SF"
-}
-else if "`cz'"=="9100" {
-	local czname = "Atl."
-}
-else if "`cz'"=="38300" {
-	local czname = "LA"
-}
-else if "`cz'"=="33100" {
-	local czname = "DFW"
-}
-else if "`cz'"=="32000" {
-	local czname = "Hous."
-}
-else if "`cz'"=="7000" {
-	local czname = "Miami"
-}
-else if "`cz'"=="35001" {
-	local czname = "Phnx."
-}
-else if "`cz'"=="39400" {
-	local czname = "Sea."
-}
-else if "`cz'"=="11600" {
-	local czname = "Det"
-}
-else if "`cz'"=="38000" {
-	local czname = "SD"
-}
-else if "`cz'"=="21501" {
-	local czname = "Minn."
-}
-
-
-
-
-
-
-
-
-
-	
-	
-	
-foreach y in 1980 1990 2000 2010 2019 {
-	preserve
-		keep if year_bin==`y'
-		
-		levelsof czone, local(czones)
-		foreach cz of local czones {
-			
-			if "`cz'"=="19400" {
-				local czname = "NYC"
-			}
-			else if "`cz'"=="20500" {
-				local czname = "Bos."
-			}
-			else if "`cz'"=="24300" {
-				local czname = "Chic."
-			}
-			else if "`cz'"=="19700" {
-				local czname = "Phil."
-			}
-			else if "`cz'"=="11304" {
-				local czname = "DC"
-			}
-			else if "`cz'"=="37800" {
-				local czname = "SF"
-			}
-			else if "`cz'"=="9100" {
-				local czname = "Atl."
-			}
-			else if "`cz'"=="38300" {
-				local czname = "LA"
-			}
-			else if "`cz'"=="33100" {
-				local czname = "DFW"
-			}
-			else if "`cz'"=="32000" {
-				local czname = "Hous."
-			}
-			else if "`cz'"=="7000" {
-				local czname = "Miami"
-			}
-			else if "`cz'"=="35001" {
-				local czname = "Phnx."
-			}
-			else if "`cz'"=="39400" {
-				local czname = "Sea."
-			}
-			else if "`cz'"=="11600" {
-				local czname = "Det"
-			}
-			else if "`cz'"=="38000" {
-				local czname = "SD"
-			}
-			else if "`cz'"=="21501" {
-				local czname = "Minn."
-			}
-			else {
-				local czname = "WOOPS"
-			}
-			
-			eststo, title("`czname'"): reghdfe ln_trantime d_black `demog' `transpo' `work' if czone==`cz' [aw=czwt_tt], a(ind1990 occ1990)
-				
-		}
-	
-		esttab using "${ROOT}/empirics/results/${SAMPLE}/tables/bigcities_all`y'.tex", b(3) se(3) nocon keep(*d_black*) label replace bookt f mti nodepvars
-		esttab using "${ROOT}/empirics/results/${SAMPLE}/tables/bigcities_all`y'.csv", b(3) se(3) nocon keep(*d_black*) label replace f mti nodepvars
-
-		est clear
-	restore
-	
-}
-
-keep if year_bin>=2000
-foreach y in 2000 2010 2019 {
-	preserve
-		keep if year_bin==`y'
-		
-		local czlist 
-		
-		levelsof czone, local(czones)
-		foreach cz of local czones {
-		
-			if "`cz'"=="19400" {
-				local czname = "NYC"
-			}
-			else if "`cz'"=="20500" {
-				local czname = "Bos."
-			}
-			else if "`cz'"=="24300" {
-				local czname = "Chic."
-			}
-			else if "`cz'"=="19700" {
-				local czname = "Phil."
-			}
-			else if "`cz'"=="11304" {
-				local czname = "DC"
-			}
-			else if "`cz'"=="37800" {
-				local czname = "SF"
-			}
-			else if "`cz'"=="9100" {
-				local czname = "Atl."
-			}
-			else if "`cz'"=="38300" {
-				local czname = "LA"
-			}
-			else if "`cz'"=="33100" {
-				local czname = "DFW"
-			}
-			else if "`cz'"=="32000" {
-				local czname = "Hous."
-			}
-			else if "`cz'"=="7000" {
-				local czname = "Miami"
-			}
-			else if "`cz'"=="35001" {
-				local czname = "Phnx."
-			}
-			else if "`cz'"=="39400" {
-				local czname = "Sea."
-			}
-			else if "`cz'"=="11600" {
-				local czname = "Det"
-			}
-			else if "`cz'"=="38000" {
-				local czname = "SD"
-			}
-			else if "`cz'"=="21501" {
-				local czname = "Minn."
-			}
-			else {
-				local czname = "WOOPS"
-			}
-			
-			eststo, title("`czname'"): reghdfe ln_trantime d_black `demog' `transpo' `work' if czone==`cz' [aw=czwt_tt], a(puma_yrbncz ind1990 occ1990)
-			
-		}
-	
-		esttab using "${ROOT}/empirics/results/${SAMPLE}/tables/bigcities_puma`y'.tex", b(3) se(3) nocon keep(*d_black*) label replace bookt f mti nodepvars
-		esttab using "${ROOT}/empirics/results/${SAMPLE}/tables/bigcities_puma`y'.csv", b(3) se(3) nocon keep(*d_black*) label replace f mti nodepvars
-
-		est clear
-	restore
-	
-}
 
 

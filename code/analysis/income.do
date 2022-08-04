@@ -1,12 +1,13 @@
 
 clear all
 
-use "${ROOT}/empirics/data/ipums_vars_standardized.dta", clear
+use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
 set scheme plotplainblind
 
-// Specify rsample
-do		"$ROOT/empirics/code/analysis/parse_sample.do"
+// Specify sample
+do		"${DGIT}/code/analysis/parse_sample.do"
 
+keep if empstat==1
 
 // Make smaller for speed/ease
 drop racamind racasian racblk racpacis racwht racnum trantime czwt_tt_orig d_hisp d_aapi d_amin samp_blw samp_hiw samp_aaw samp_aiw d_completed_college d_completed_high_school d_southern_state age_bin d_white sex
@@ -86,9 +87,9 @@ frame change default
 
 **
 frame change regvalues
-frame regvalues: save "${ROOT}/empirics/data/temp_dta/${SAMPLE}/income_all.dta", replace
+frame regvalues: save "${DATA}/empirics/data/temp_dta/${SAMPLE}/income_all.dta", replace
 ****
-use "${ROOT}/empirics/data/temp_dta/${SAMPLE}/income_all.dta", clear
+use "${DATA}/empirics/data/temp_dta/${SAMPLE}/income_all.dta", clear
 
 drop if mi(beta_1)
 
@@ -119,6 +120,6 @@ twoway (rcap upper_1 lower_1 vigntile, lstyle(ci) lcolor(black%80)) ///
 				 4 "2019 - Controls: CZ"	/// 
 				 6 "1980 - Controls: CZ + demo + mode + work"  ///
 				 8 "2019 - Controls: CZ + demo + mode + work") rows(2) pos(6)) 
-graph export "${ROOT}/empirics/results/${SAMPLE}/plots/income_all.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/income_all.png", replace
 
 clear frames

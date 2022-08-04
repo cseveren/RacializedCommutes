@@ -18,11 +18,11 @@ Plots showing evolution of commuting gap over time, in the style of Currie et al
 *******************************************************************************/
 clear all
 
-use "${ROOT}/empirics/data/ipums_vars_standardized.dta", clear
+use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
 set scheme plotplainblind
 
-// Specify rsample
-do		"$ROOT/empirics/code/analysis/parse_sample.do"
+// Specify sample
+do		"${DGIT}/code/analysis/parse_sample.do"
 
 keep if empstat==1
 
@@ -31,7 +31,7 @@ keep if empstat==1
 ------------------------------------------------------------------------------*/
 ************************************
 *--Plots of raw data
-!mkdir "${ROOT}/empirics/results/${SAMPLE}/plots/unconditional"
+!mkdir "${DGIT}/results/${SAMPLE}/plots/unconditional"
 
 preserve
 	foreach var in trantime { //ln_trantime {
@@ -57,7 +57,7 @@ preserve
 // 			legend(pos(6) row(1) order(2 "White" 4 "Black")) ///
 // 			xtitle("Census Year") ytitle("Commute Time") name(rcap, replace)
 			
-		graph export "${ROOT}/empirics/results/${SAMPLE}/plots/unconditional/`var'.png", replace	
+		graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/`var'.png", replace	
 	}
 restore	 
 
@@ -81,7 +81,7 @@ preserve
 		subtitle(, pos(6)) ///
 		by(tranwork, row(1) noixtick noiytick note(""))
 	
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/unconditional/trantime_bymodes_spike.png", replace	
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/trantime_bymodes_spike.png", replace	
 	/*
 	keep if year_bin==1980 | year_bin==2019
 	
@@ -158,7 +158,7 @@ preserve
 
 	collapse (mean) modeshare_* [aw=czwt_tt], by(year d_black) 	 	
 		
-	append using "$ROOT/empirics/output/modeshare_1960_1970.dta"
+	append using "${DATA}/empirics/output/modeshare_1960_1970.dta"
 	
 	sort year d_black
 	
@@ -168,7 +168,7 @@ preserve
 		ytitle("Mode Share") xtitle("Census Year") ylabel(0.5(0.1)1.0, grid gmax) ///
 		legend(order(1 "Auto - (White Commuters)" 2 "Auto - (Black Commuters)") rows(1) pos(6)) 
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/unconditional/modeshare_auto.png", replace		
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_auto.png", replace		
 			
 	twoway (line modeshare_bus year if d_black == 0, lstyle(solid) lcolor(blue))  ///
 		(line modeshare_bus year if d_black == 1, lpattern(dash) lcolor(blue))  ///
@@ -179,7 +179,7 @@ preserve
 		ytitle("Mode Share") xtitle("Census Year") ///
 		legend(order(1 "Bus or Streetcar" 	///
 					 3 "Subway or Elevated" 5 "Railroad") rows(1) pos(6))
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/unconditional/modeshare_transits.png", replace					 
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_transits.png", replace					 
 
 	twoway (line modeshare_bicycle year if d_black == 0, lstyle(solid) lcolor(cyan))  ///
 		(line modeshare_bicycle year if d_black == 1, lpattern(dash) lcolor(cyan))  ///
@@ -190,7 +190,7 @@ preserve
 		ytitle("Mode Share") xtitle("Census Year") ///
 		legend(order(1 "Bicycle"    ///
 					 3 "Walked Only" 5 "Other") rows(1) pos(6))				 
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/unconditional/modeshare_bikewalkother.png", replace				 
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_bikewalkother.png", replace				 
 restore
 
 
@@ -209,7 +209,7 @@ preserve
 		ytitle("Commute Time") xtitle("Census Year") ///
 		legend(order(1 "White, Male" 2 "Black, Male"	///
 					 3 "White, Female" 4 "Black, Female") rows(1) pos(6))
-		graph export "${ROOT}/empirics/results/${SAMPLE}/plots/unconditional/trantime_bygender.png", replace	
+		graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/trantime_bygender.png", replace	
 
 restore
 
@@ -221,18 +221,18 @@ restore
 *--Kdensity
 sum trantime, d
 
-!mkdir "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/"
+!mkdir "${DGIT}/results/${SAMPLE}/plots/distributions/"
 
 kdensity trantime [aw=czwt_tt], bwidth(5) ytitle("Density") xtitle("Commute Time")
-graph export "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/kdensity_all_bw5.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/distributions/kdensity_all_bw5.png", replace
 
 kdensity trantime [aw=czwt_tt], bwidth(2.5) ytitle("Density") xtitle("Commute Time")
-graph export "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/kdensity_all_bw25.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/distributions/kdensity_all_bw25.png", replace
 
 twoway (kdensity trantime [aw=czwt_tt] if d_black == 0, bwidth(5) lcolor(blue)) ///
 		(kdensity trantime [aw=czwt_tt] if d_black == 1, bwidth(5) lcolor(red)), ///
 		legend(order(1 "White" 2 "Black")) xtitle("Commute Time") ytitle("Density") note("")
-graph export "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/kdensity_byrace_bw5.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/distributions/kdensity_byrace_bw5.png", replace
 
 
 local years_list 1980 1990 2000 2010 2019
@@ -244,7 +244,7 @@ foreach y of local years_list {
 		legend(order(1 "White" 2 "Black")) ///
 		xtitle("Commute Time") ytitle("Density") ylabel(0[0.01]0.04)
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/kdensity_byrace_`y'_bw5.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/distributions/kdensity_byrace_`y'_bw5.png", replace
 
 }	
 
@@ -270,12 +270,12 @@ preserve
 	replace bin_5 = (bin_5 - 1) * 5 + 2.5
 
 	hist bin_5 [fw = freq], discrete ytitle("Density") xtitle("Commute Time (minutes)")
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/hist_all_bw5.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_all_bw5.png", replace
 
 	twoway (hist bin_5 [fw = freq] if d_black == 0, discrete color(gray) lcolor(none)) ///
 			(hist bin_5 [fw = freq] if d_black == 1, discrete fcolor(none) lcolor(black)), ///
 			legend(order(1 "White" 2 "Black") row(1) pos(6)) xtitle("Commute Time (minutes)") ytitle("Density")
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/hist_byrace_bw5.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_byrace_bw5.png", replace
 
 	local years_list 1980 1990 2000 2010 2019
 	foreach y of local years_list {
@@ -285,7 +285,7 @@ preserve
 			legend(order(1 "White" 2 "Black") row(1) pos(6)) ///
 			xtitle("Commute Time (minutes)") ytitle("Density") ylabel(0[0.01]0.04)
 			
-		graph export "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/hist_byrace_`y'_bw5.png", replace
+		graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_byrace_`y'_bw5.png", replace
 
 	}	
 
@@ -312,7 +312,7 @@ preserve
 				(hist bin_5 [fw = freq] if tranwork_bin == `n' & d_black == 1, discrete fcolor(none) lcolor(black)), ///
 				legend(order(1 "White" 2 "Black") row(1) pos(6)) xtitle("Commute Time") ytitle("Density") ///
 				note("`: label tranwork_1b `n''", size(small)) ylabel(0[0.02]0.06)
-		graph export "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/hist_byrace_`lab'_bw5.png", replace
+		graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_byrace_`lab'_bw5.png", replace
 
 	}
 
@@ -330,7 +330,7 @@ preserve
 			xtitle("Commute Time") ytitle("Density") ylabel(0[0.02]0.06) ///
 			note("`: label tranwork_1b `n'' in `y' Year Bin", size(small))
 			
-		graph export "${ROOT}/empirics/results/${SAMPLE}/plots/distributions/hist_byrace_`y'_`lab'_bw5.png", replace
+		graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_byrace_`y'_`lab'_bw5.png", replace
 
 		}
 	}	
@@ -398,7 +398,7 @@ local demog 	female i.educ_bin age age2 d_marr d_head child_1or2 child_gteq3
 local transpo	i.tranwork_bin
 local work		linc i.inczero 
 
-!mkdir "${ROOT}/empirics/data/temp_dta/${SAMPLE}"
+!mkdir "${DATA}/empirics/data/temp_dta/${SAMPLE}"
 set matsize 11000
 foreach y of local years_list {
 	
@@ -457,9 +457,9 @@ foreach y of local years_list {
 
 ****
 frame change regvalues
-frame regvalues: save "${ROOT}/empirics/data/temp_dta/${SAMPLE}/conditional_data_all.dta", replace
+frame regvalues: save "${DATA}/empirics/data/temp_dta/${SAMPLE}/conditional_data_all.dta", replace
 ****
-use "${ROOT}/empirics/data/temp_dta/${SAMPLE}/conditional_data_all.dta", clear
+use "${DATA}/empirics/data/temp_dta/${SAMPLE}/conditional_data_all.dta", clear
 
 drop if mi(beta_race_1)
 
@@ -493,7 +493,7 @@ twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black)) ///
 				 8 "4: year + CZ + mode"  ///
 				 10 "5: year + CZ + demo + mode" ///
 				 12 "6: year + CZ + demo + mode + work") rows(2) pos(6))	 
-graph export "${ROOT}/empirics/results/${SAMPLE}/plots/conditional_oncontrols.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols.png", replace
 
 twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 	(scatter beta_race_1 year, connect(l) m(i) lstyle(solid) lcolor(black))  ///
@@ -508,7 +508,7 @@ twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 				 4 "CZ"	/// 
 				 6 "CZ + mode"  ///
 				 8 "CZ + Demo + Mode + Work") rows(2) pos(6) subtitle("Controls:     ", pos(9)))	 
-graph export "${ROOT}/empirics/results/${SAMPLE}/plots/conditional_oncontrols_simpler.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_simpler.png", replace
 
 frame change default
 frame drop regvalues
@@ -605,7 +605,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 
 	****
 	frame change regvalues
-	frame regvalues: save "${ROOT}/empirics/data/temp_dta/${SAMPLE}/conditional_data_`mode'.dta", replace
+	frame regvalues: save "${DATA}/empirics/data/temp_dta/${SAMPLE}/conditional_data_`mode'.dta", replace
 	****
 	
 	frame change default
@@ -637,7 +637,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 		local mode = "other"
 	}
 
-	use "${ROOT}/empirics/data/temp_dta/${SAMPLE}/conditional_data_`mode'.dta", clear
+	use "${DATA}/empirics/data/temp_dta/${SAMPLE}/conditional_data_`mode'.dta", clear
 
 	drop if mi(beta_race_1)
 
@@ -665,7 +665,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 					 4 "2: year + CZ"	/// 
 					 6 "3: year + CZ + demo"  ///
 					 8 "6: year + CZ + demo + work") rows(1) pos(6))	 
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/conditional_oncontrols_`mode'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'.png", replace
 	
 	twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 		(scatter beta_race_1 year, connect(l) m(i) lstyle(solid) lcolor(black))  ///
@@ -677,7 +677,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 		legend(order(2 "None" 	///
 					 4 "CZ"	/// 
 					 6 "CZ + demo + work") rows(1) pos(6) subtitle("Controls:   ", pos(9)))	 
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/conditional_oncontrols_`mode'_simpler.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'_simpler.png", replace
 
 	clear
 }

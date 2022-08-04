@@ -4,11 +4,13 @@ Decompositions for each year_bins
 
 clear all
 
-use "${ROOT}/empirics/data/ipums_vars_standardized.dta", clear
+use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
 set scheme plotplainblind
 
-// Specify rsample
-do		"$ROOT/empirics/code/analysis/parse_sample.do"
+// Specify sample
+do		"${DGIT}/code/analysis/parse_sample.do"
+
+keep if empstat==1
 
 keep if year_bin>=2000
 *keep if year_bin==2000
@@ -127,9 +129,9 @@ foreach y in 2000 2010 2019 {
 		eststo, title("just_czone"): reg xb_czone d_black [aw=czwt_tt], vce(cluster czone) 
 		estadd scalar divval = 100*(_b[d_black]/`fullbeta')
 		
-		esttab using "${ROOT}/empirics/results/${SAMPLE}/tables/decompwpuma_bygroup`y'.tex", b(3) se(3) nocon keep(*d_black*) ///
+		esttab using "${DGIT}/results/${SAMPLE}/tables/decompwpuma_bygroup`y'.tex", b(3) se(3) nocon keep(*d_black*) ///
 			label replace bookt f stats(divval, fmt(%9.1f))
-		estout using "${ROOT}/empirics/results/${SAMPLE}/tables/decompwpuma_bygroup`y'.xls", keep(*d_black*) ///
+		estout using "${DGIT}/results/${SAMPLE}/tables/decompwpuma_bygroup`y'.xls", keep(*d_black*) ///
 			starlevels(* 0.10 ** 0.05 *** 0.01) cells(b(star fmt(3)) se(par(`"="("'`")""') fmt(3))) ///
 			stats(r2 N, label("R-squared" "Number of Observations")) label legend replace
 

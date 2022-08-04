@@ -1,12 +1,12 @@
 ** 2Balt add in largest city name from czlma903.xls
 
-import excel using "$ROOT/empirics/input/crosswalks/cz_names/czlma903.xls", clear firstrow
+import excel using "${DATA}/empirics/input/crosswalks/cz_names/czlma903.xls", clear firstrow
 
 rename NameoflargestplaceinCommuti LargestCity
 rename CZ90 czone
 destring czone, replace
 
-do		"$ROOT/empirics/code/build/0A_czone_mergers.do"
+do		"${DGIT}/code/build/0A_czone_mergers.do"
 
 replace LargestCity = "New York city, NY (and Newark, NJ)" if czone==19400
 replace LargestCity = "Dallas, TX (and Forth Worth, TX)" if czone==33100
@@ -33,12 +33,12 @@ drop _merge
 tempfile zonenames
 save "`zonenames'", replace
 
-export delimited "$ROOT/empirics/output/cz_names.csv", replace
+export delimited "${DATA}/empirics/output/cz_names.csv", replace
 
 clear
 
 foreach ff in blacknonblack blackwhite {
-	use "$ROOT/empirics/output/czyrcoeffs_`ff'_all.dta"
+	use "${DATA}/empirics/output/czyrcoeffs_`ff'_all.dta"
 
 	merge m:1 czone using "`zonenames'"
 	drop _merge

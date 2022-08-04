@@ -2,6 +2,7 @@ rm(list = ls())
 
 # Define project directory
 cdir <- "C:/Dropbox/Dropbox/Data_Projects/RacialCommutingGap/"
+gdir <- "C:\\GitHub\\RacializedCommutes\\"
 ######################################################
 ## BELOW THIS POINT, code should just run ##
 
@@ -16,6 +17,13 @@ library(data.table)
 # library(devtools)
 # install_github("lrberge/fixest")
 library(fixest)  # v 0.10.0
+
+
+myDict = c("d_black::1:year_bin::1980" = "$1[\\text{Black}] \\times t_{1980}$",
+           "d_black::1:year_bin::1990" = "$1[\\text{Black}] \\times t_{1990}$",
+           "d_black::1:year_bin::2000" = "$1[\\text{Black}] \\times t_{2000}$",
+           "d_black::1:year_bin::2010" = "$1[\\text{Black}] \\times t_{2005--11}$",
+           "d_black::1:year_bin::2019" = "$1[\\text{Black}] \\times t_{2012--19}$")
 
 ##########################################
 
@@ -71,8 +79,9 @@ dcomp_cz <- feols(xb_cz ~ i(d_black),
 
 
 
-etable(baseline,allin,dcomp_demo,dcomp_transit,dcomp_work,dcomp_cz, keep = "d_black", tex=TRUE, digits=3,
-       file = paste0(cdir,"/empirics/results/black-white/tables/decomposition_bygroup.tex") )
+etable(baseline,allin,dcomp_demo,dcomp_transit,dcomp_work,dcomp_cz,
+       keep = "t_", tex=TRUE, digits=3, replace=TRUE, dict = myDict,
+       file = paste0(gdir,"\\results\\black-white\\tables\\decomposition_bygroup.tex") )
 
 percentages <- c(allin$coefficients[[1]]/baseline$coefficients[[1]],
   dcomp_demo$coefficients[[2]]/baseline$coefficients[[1]],
@@ -80,5 +89,5 @@ percentages <- c(allin$coefficients[[1]]/baseline$coefficients[[1]],
   dcomp_work$coefficients[[2]]/baseline$coefficients[[1]],
   dcomp_cz$coefficients[[2]]/baseline$coefficients[[1]])
 
-write.csv(percentages,paste0(cdir,"/empirics/results/black-white/tables/decomposition_bygroup_percentages.tex"))
+write.csv(percentages,paste0(gdir,"\\results\\black-white\\tables\\decomposition_bygroup_percentages.tex"))
 

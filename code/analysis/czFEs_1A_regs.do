@@ -1,5 +1,7 @@
 
-use "${ROOT}\empirics\data\ipums_vars_standardized.dta", clear
+use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
+keep if empstat==1
+
 gen all=1
 
 local dvar `1'
@@ -53,7 +55,7 @@ foreach i of numlist 2 6 {
 	gen czone = floor(czone_year_bin/10000)
 	gen year = czone_year_bin-10000*czone
 	
-	capture save "$ROOT/empirics/output/czyrcoeffs_`dout'_r`i'.dta", replace
+	capture save "${DATA}/empirics/output/czyrcoeffs_`dout'_r`i'.dta", replace
 }
 restore
 
@@ -68,13 +70,13 @@ foreach i of numlist 2 6 {
 	gen czone = floor(czone_year_bin/10000)
 	gen year = czone_year_bin-10000*czone
 	
-	capture save "$ROOT/empirics/output/czyrcoeffs_`dout'_lev`i'.dta", replace
+	capture save "${DATA}/empirics/output/czyrcoeffs_`dout'_lev`i'.dta", replace
 }
 restore
 
 foreach i of numlist 2 6 {
 	clear
-	use "$ROOT/empirics/output/czyrcoeffs_`dout'_r`i'.dta"
+	use "${DATA}/empirics/output/czyrcoeffs_`dout'_r`i'.dta"
 	
 	gen versi = `i'
 	gen verss = "r`i'_"
@@ -87,7 +89,7 @@ foreach i of numlist 2 6 {
 
 foreach i of numlist 2 6 {
 	clear
-	use "$ROOT/empirics/output/czyrcoeffs_`dout'_lev`i'.dta"
+	use "${DATA}/empirics/output/czyrcoeffs_`dout'_lev`i'.dta"
 	
 	gen versi = `i'
 	gen verss = "lev`i'_"
@@ -107,4 +109,4 @@ foreach i of numlist 2 6 {
 drop versi
 reshape wide @estimate @stderr @p, i(czone_year_bin czone year) j(verss) string
 
-save "$ROOT/empirics/output/czyrcoeffs_`dout'_all.dta", replace
+save "${DATA}/empirics/output/czyrcoeffs_`dout'_all.dta", replace

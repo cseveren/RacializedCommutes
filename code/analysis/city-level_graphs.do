@@ -1,10 +1,10 @@
-use "$ROOT/empirics/output/czyrall_blackwhite.dta", clear
+use "${DATA}/empirics/output/czyrall_blackwhite.dta", clear
 
-do 	"$ROOT/empirics/code/analysis/city-level_prep.do"
+do 	"${DGIT}/code/analysis/city-level_prep.do"
 
 est clear
 
-!mkdir "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel"
+!mkdir "${DGIT}/results/${SAMPLE}/plots/citylevel"
 
 set scheme plotplainblind
 
@@ -41,7 +41,7 @@ foreach n of numlist 6 {
 		xtitle("RRD in 1980") ytitle("RRD in 2012-19") yscale(range(-0.4 0.5)) xscale(range(-0.4 0.5)) ///
 		text(0.3 -0.25 "Slope: `coef'" "Standard Error: `se'", j(right) si(medsmall) c(dkorange))
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/persistance_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/persistance_`n'.png", replace
 	
 	
 	twoway (scatter r`n'_estimate lpop if year==1980, m(o) mc(black) ) || ///
@@ -52,7 +52,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Log(Population)") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/popchange_`n'.png", replace	
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/popchange_`n'.png", replace	
 	
 	twoway (scatter r`n'_estimate perc_black if year==1980, m(o) mc(black) ) || ///
 		(lpoly r`n'_estimate perc_black if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
@@ -62,7 +62,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Percent Black") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
 
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/percblack_`n'.png", replace	
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/percblack_`n'.png", replace	
 	
 	twoway (scatter r`n'_estimate diss if year==1980, m(o) mc(black) ) || ///
 		(lpoly r`n'_estimate diss if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
@@ -72,7 +72,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Residential Segregation (Dissimilarity)") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/segdiss_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/segdiss_`n'.png", replace
 	
 	
 	twoway (scatter r`n'_estimate gini_blk if year==1990, m(o) mc(gray) ) || ///
@@ -83,7 +83,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Employment Concentration (GINI) - Black Workers") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/giniblk_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/giniblk_`n'.png", replace
 	
 	twoway (scatter r`n'_estimate gini_wht if year==1990, m(o) mc(gray) ) || ///
 		(lpoly r`n'_estimate gini_wht if year==1990 [aw=popemp_black], lc(gray) lp(solid)) || ///
@@ -93,7 +93,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Employment Concentration (GINI) - White Workers") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/giniwht_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/giniwht_`n'.png", replace
 	
 	twoway (scatter r`n'_estimate tot_centrality_OG if year==1980, m(o) mc(black) ) || ///
 		(lpoly r`n'_estimate tot_centrality_OG if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
@@ -103,7 +103,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Centrality (Bento et al. '05)") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/centrality_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/centrality_`n'.png", replace
 	
 	twoway (scatter r`n'_estimate lmiles_ab if year==1980, m(o) mc(black) ) || ///
 		(lpoly r`n'_estimate lmiles_ab if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
@@ -113,7 +113,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Log(Highway Miles)") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/highways_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/highways_`n'.png", replace
 	
 	twoway (scatter r`n'_estimate modeshare_anytransit if year==1980, m(o) mc(black) ) || ///
 		(lpoly r`n'_estimate modeshare_anytransit if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
@@ -123,7 +123,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Transit Mode Share") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
 	
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/transitshare_`n'.png", replace	
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/transitshare_`n'.png", replace	
 	
 		
 	twoway (scatter r`n'_estimate time_car if year==1980, m(o) mc(black) ) || ///
@@ -134,7 +134,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Travel Time - Car") ytitle("Residual Difference") yscale(range(-0.5 0.5))
 	
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/traveltimecar_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/traveltimecar_`n'.png", replace
 	
 	twoway (scatter r`n'_estimate comm_hval_corr_est if year==1980, m(o) mc(black) ) || ///
 		(lpoly r`n'_estimate comm_hval_corr_est if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
@@ -144,7 +144,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Corr(Commute Time, Housing Price)") ytitle("Residual Difference") yscale(range(-0.5 0.5))
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/commhvalcorr_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/commhvalcorr_`n'.png", replace
 	
 	twoway (scatter r`n'_estimate lhval if year==1980, m(o) mc(black) ) || ///
 		(lpoly r`n'_estimate lhval if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
@@ -154,7 +154,7 @@ foreach n of numlist 6 {
 		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
 		xtitle("Log(Average House Price)") ytitle("Residual Difference") yscale(range(-0.5 0.5))
 		
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/citylevel/houseprice_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/houseprice_`n'.png", replace
 	
 }
 	

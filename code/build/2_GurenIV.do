@@ -1,7 +1,10 @@
 
 ***Census Division Averages***
 
-use "${DATA}/empirics/data/ipums_vars_standardized.dta", clear
+use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
+
+* to approximate draft results from March 2022, use
+* keep if empstat==1
 
 keep 	division year_bin valueh d_black czwt_tt czone_year_bin czone
 

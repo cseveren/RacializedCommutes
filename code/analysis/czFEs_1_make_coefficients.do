@@ -13,9 +13,9 @@
 
 *********************************************
 ** Estimate FEs by CZ-yearbin bins **
+*est clear
+*do "${DGIT}/code/analysis/czFEs_1A_regs.do" d_black all blacknonblack
 est clear
-do "${ROOT}/empirics/code/analysis/czFEs_1A_regs.do" d_black all blacknonblack
-est clear
-do "${ROOT}/empirics/code/analysis/czFEs_1A_regs.do" d_black samp_blw blackwhite
+do "${DGIT}/code/analysis/czFEs_1A_regs.do" d_black samp_blw blackwhite
 
 
