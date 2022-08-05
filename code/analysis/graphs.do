@@ -24,7 +24,8 @@ set scheme plotplainblind
 // Specify sample
 do		"${DGIT}/code/analysis/parse_sample.do"
 
-keep if empstat==1
+keep if empstat==1 
+keep if empstatd==10 || empstatd==14
 
 /*------------------------------------------------------------------------------
 	Unconditional plots of raw data

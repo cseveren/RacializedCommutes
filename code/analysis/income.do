@@ -7,7 +7,8 @@ set scheme plotplainblind
 // Specify sample
 do		"${DGIT}/code/analysis/parse_sample.do"
 
-keep if empstat==1
+keep if empstat==1 
+keep if empstatd==10 || empstatd==14
 
 // Make smaller for speed/ease
 drop racamind racasian racblk racpacis racwht racnum trantime czwt_tt_orig d_hisp d_aapi d_amin samp_blw samp_hiw samp_aaw samp_aiw d_completed_college d_completed_high_school d_southern_state age_bin d_white sex

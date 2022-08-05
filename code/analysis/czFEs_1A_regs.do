@@ -1,6 +1,7 @@
 
 use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
-keep if empstat==1
+keep if empstat==1 
+keep if empstatd==10 || empstatd==14
 
 gen all=1
 
