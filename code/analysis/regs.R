@@ -41,18 +41,22 @@ T1B.3 <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
                ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
 T1B.4 <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
-                 year_bin^tranwork_bin,
+                 year_bin^educ_bin +
+                 year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3] +
+                 year_bin[d_gq, d_vehinhh],
                ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
 T1B.5 <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3] +
+                 year_bin[d_gq, d_vehinhh] +
                  year_bin^tranwork_bin,
                ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
 T1B.6 <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  year_bin^tranwork_bin +
                  ind1990^year_bin + occ1990^year_bin,
                ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)

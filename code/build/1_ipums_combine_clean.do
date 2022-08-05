@@ -108,7 +108,7 @@ compress
 *******************************
 drop if czwt_tt==0 | czwt_tt==.
 
-drop hhwt hhtype statefip puma gq farm ownershpd mortgage rentgrs hhincome ncouples multgen multgend perwt famsize nchlt5 related birthyr race hispan bpl citizen yrimmig speakeng racesing racesingd wkswork2 inctot uhrswork movedin sample cluster strata ownershp workedyr czwt migsamp ftotinc
+drop hhwt hhtype statefip puma farm ownershpd mortgage rentgrs hhincome ncouples multgen multgend perwt famsize nchlt5 related birthyr race hispan bpl citizen yrimmig speakeng racesing racesingd wkswork2 inctot uhrswork movedin sample cluster strata ownershp workedyr czwt migsamp ftotinc
  
 *******************************
 ** 5) Additional var creation + add in div indicators
@@ -169,12 +169,12 @@ replace puma_yrbn = puma2000*100 + 00 if year_bin==2000 & !mi(puma2000)
 replace puma_yrbn = puma2000*100 + 10 if year_bin==2010 & !mi(puma2000)
 replace puma_yrbn = puma2010*100 + 19 if year_bin==2019 & !mi(puma2010)
 
-egen long puma_yr = group(puma_yrbn year_bin) 
+gegen long puma_yr = group(puma_yrbn year_bin) 
 
 drop ctygrp1980 puma1990 puma2000 puma2010
 
 g long pwpumast = pwstate2*100000 + powpuma if !mi(pwstate2) & !mi(powpuma)
-egen long pwpuma_yr = group(pwpumast year_bin)
+gegen long pwpuma_yr = group(pwpumast year_bin)
 
 drop pwstate2 powpuma
 

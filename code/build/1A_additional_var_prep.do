@@ -58,8 +58,13 @@ lab def tranwork_1b 10 "Private Motor Vehicle" 30 "Bus or Streetcar" ///
 
 lab val tranwork_bin tranwork_1b	
 
+** group quarters and vehicle in hh**
+gen byte d_gq = 0 if inlist(gq,1,2,5)
+replace  d_gq = 1 if inlist(gq,3,4)
+
 gen byte d_vehinhh = (vehicles>=1) if !mi(vehicles)
-drop vehicles
+replace d_vehinhh = 0 if mi(d_vehinhh) & d_gq==1
+drop gq vehicles
 
 ** OTHER DEMOGRAPHICS **
 
@@ -89,3 +94,4 @@ gen  	inczero = incwage==0
 gen 	linc = ln(incwage)
 replace linc = 0 if linc==.
 	
+

@@ -53,6 +53,11 @@ do		"${DGIT}/code/build/1_ipums_combine_clean.do" 	/* Calls ./1A_additional_var_
 !mkdir "${DGIT}/results/${SAMPLE}/plots"
 
 do		"${DGIT}/code/analysis/regs.do"  				/* Create /data/ipums_smaller.csv for R use */	
+
+
+
+
+
 /*Note: Also execute ../regs.R for regs too large for Stata  */
 do		"${DGIT}/code/analysis/lfpr.do"  	
 do		"${DGIT}/code/analysis/graphs.do" 	
