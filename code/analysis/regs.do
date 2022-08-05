@@ -64,7 +64,8 @@ preserve
 	export delim using "${DATA}/empirics/data/ipums_smaller_lfp.csv", replace nolab
 restore	
 	
-keep if empstatd==10 | empstatd==14
+keep if empstat==1 
+keep if empstatd==10 || empstatd==14
 
 gen other8 = 0
 gen transit8 = 0

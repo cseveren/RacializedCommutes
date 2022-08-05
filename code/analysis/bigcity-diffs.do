@@ -6,7 +6,8 @@ set scheme plotplainblind
 // Specify sample
 do		"${DGIT}/code/analysis/parse_sample.do"
 
-keep if empstat==1
+keep if empstat==1 
+keep if empstatd==10 || empstatd==14
 
 gen other8 = 0
 gen transit8 = 0
