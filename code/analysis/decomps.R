@@ -35,6 +35,7 @@ baseline <- feols(ln_trantime ~ i(d_black) | year_bin,
 allin <- feols(ln_trantime ~ i(d_black) | czone_year_bin + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  year_bin^tranwork_bin +
                  ind1990^year_bin + occ1990^year_bin,
                ipums, cluster = "czone", weights = ipums$czwt_tt, mem.clean = TRUE, combine.quick = FALSE)
@@ -55,6 +56,9 @@ preddata$xb_demographics = fevals$`year_bin[[female]]` * ipums$female +
   fevals$`year_bin[[child_1or2]]` * ipums$child_1or2 +
   fevals$`year_bin[[child_gteq3]]` * ipums$child_gteq3 
 
+preddata$sb_cargq = fevals$`year_bin[[d_gq]]` * ipums$d_gq +
+  fevals$`year_bin[[d_vehinhh]]` * ipums$d_vehinhh +
+
 preddata$xb_transit = fevals$`year_bin^tranwork_bin` 
 
 preddata$xb_work = fevals$`occ1990^year_bin` +
@@ -68,6 +72,9 @@ preddata$xb_cz = fevals$`czone_year_bin` +
 dcomp_demo <- feols(xb_demographics ~ i(d_black),
                   preddata, cluster = "czone", weights = preddata$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
+dcomp_cargq <- feols(xb_cargq ~ i(d_black),
+                    preddata, cluster = "czone", weights = preddata$czwt_tt, lean = TRUE, mem.clean = TRUE)
+
 dcomp_transit <- feols(xb_transit ~ i(d_black),
                     preddata, cluster = "czone", weights = preddata$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
@@ -79,7 +86,7 @@ dcomp_cz <- feols(xb_cz ~ i(d_black),
 
 
 
-etable(baseline,allin,dcomp_demo,dcomp_transit,dcomp_work,dcomp_cz,
+etable(baseline,allin,dcomp_demo,dcomp_cargq,dcomp_transit,dcomp_work,dcomp_cz,
        keep = "t_", tex=TRUE, digits=3, replace=TRUE, dict = myDict,
        file = paste0(gdir,"\\results\\black-white\\tables\\decomposition_bygroup.tex") )
 

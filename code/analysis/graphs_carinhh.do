@@ -4,6 +4,8 @@ clear all
 use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
 set scheme plotplainblind
 
+drop if year==2005 // group quarters population removed in 2005
+
 // Specify rsample
 do		"${DGIT}/code/analysis/parse_sample.do"
 

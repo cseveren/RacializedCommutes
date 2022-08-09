@@ -8,7 +8,7 @@ use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
 
 keep 	division year_bin valueh d_black czwt_tt czone_year_bin czone
 
-collapse (mean) m_valueh=valueh sh_black=d_black (median) p50_valueh=valueh (rawsum) czwt_tt [aw=czwt_tt], by(czone_year_bin czone division year_bin)
+gcollapse (mean) m_valueh=valueh sh_black=d_black (median) p50_valueh=valueh (rawsum) czwt_tt [aw=czwt_tt], by(czone_year_bin czone division year_bin)
 
 bys division year_bin: gegen totalave = sum(m_valueh*czwt_tt)
 bys division year_bin: gegen totalsum = sum(czwt_tt)

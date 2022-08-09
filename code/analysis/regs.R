@@ -65,32 +65,6 @@ etable(T1B.1,T1B.2,T1B.3,T1B.4,T1B.5,T1B.6,
        keep = "t_", tex=TRUE, digits=3, replace=TRUE, dict = myDict,
        file = paste0(gdir,"\\results\\black-white\\tables\\gap_yearspecific_all.tex") )
 
-## income check
-
-# inccheck_unc0 <- feols(ln_trantime ~ i(year_bin, linc) + i(year_bin, i.inczero) | czone_year_bin,
-#                       ipums, cluster = "czone", weights = ipums$czwt_tt, mem.clean = TRUE)
-# ff_unc0 <- fixef(inccheck_unc0)
-# 
-# etable(inccheck_unc0)
-# 
-# inccheck_unc <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
-#                     year_bin[linc, inczero],
-#                   ipums, cluster = "czone", weights = ipums$czwt_tt, mem.clean = TRUE)
-# ff_unc <- fixef(inccheck_unc)
-# 
-# inccheck_con <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
-#                  year_bin^educ_bin +
-#                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
-#                  year_bin^tranwork_bin +
-#                  ind1990^year_bin + occ1990^year_bin,
-#                ipums, cluster = "czone", weights = ipums$czwt_tt, mem.clean = TRUE)
-# ff_con <- fixef(inccheck_con)
-# 
-# ff_unc$`year_bin[[linc]]`
-# ff_con$`year_bin[[linc]]`
-# 
-# rm(inccheck_unc, inccheck_con, ff_unc, ff_con)
-
 
 
 ##  Car Only by Year, CZFEs
@@ -110,42 +84,53 @@ TC.3 <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
               subset = (ipums$tranwork_bin==10), 
               ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
-T1C.4 <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
+TC.4 <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
+                year_bin^educ_bin +
+                year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3] +
+                year_bin[d_gq, d_vehinhh],
+              subset = (ipums$tranwork_bin==10), 
+              ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
+
+TC.5 <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  ind1990^year_bin + occ1990^year_bin,
                subset = (ipums$tranwork_bin==10),
                ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
-etable(TC.1,TC.2,TC.3,T1C.4, keep = "d_black",
+etable(TC.1,TC.2,TC.3,TC.4,TC.5,
        keep = "t_", tex=TRUE, digits=3, replace=TRUE, dict = myDict,
        file = paste0(gdir,"\\results\\black-white\\tables\\gap_yearspecific_car.tex") )
 
 
 ## Mode comparisons
 
-T1C.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
+TC.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  ind1990^year_bin + occ1990^year_bin,
                subset = (ipums$tranwork_bin==30),
                ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
-T1C.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
+TC.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    ind1990^year_bin + occ1990^year_bin,
                    subset = (ipums$tranwork_bin==36),
                    ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
-T1C.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
+TC.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    ind1990^year_bin + occ1990^year_bin,
                  subset = (ipums$tranwork_bin==60),
                  ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
 
-etable(T1B.6,T1C.4,T1C.bus,T1C.subway,T1C.walk,
+etable(T1B.6,TC.5,TC.bus,TC.subway,TC.walk,
        keep = "t_", tex=TRUE, digits=3, replace=TRUE, dict = myDict,
        file = paste0(gdir,"\\results\\black-white\\tables\\gap_yearspecific_modcomps.tex") )
 
@@ -156,6 +141,7 @@ etable(T1B.6,T1C.4,T1C.bus,T1C.subway,T1C.walk,
 T8.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  year_bin^tranwork_bin +
                  ind1990^year_bin + occ1990^year_bin,
                 subset = (ipums$transit8==1),
@@ -165,6 +151,7 @@ T8.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 T8.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  ind1990^year_bin + occ1990^year_bin,
                subset = ((ipums$tranwork_bin==10) & (ipums$transit8==1)),
                ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -173,6 +160,7 @@ T8.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 T8.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    ind1990^year_bin + occ1990^year_bin,
                  subset = ((ipums$tranwork_bin==30) & (ipums$transit8==1)),
                  ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -180,6 +168,7 @@ T8.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 T8.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                       year_bin^educ_bin +
                       year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                      year_bin[d_gq, d_vehinhh] +
                       ind1990^year_bin + occ1990^year_bin,
                     subset = ((ipums$tranwork_bin==36) & (ipums$transit8==1)),
                     ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -187,6 +176,7 @@ T8.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 T8.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                     year_bin^educ_bin +
                     year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                    year_bin[d_gq, d_vehinhh] +
                     ind1990^year_bin + occ1990^year_bin,
                   subset = ((ipums$tranwork_bin==60) & (ipums$transit8==1)),
                   ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -195,6 +185,7 @@ T8.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 To8.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                   year_bin^educ_bin +
                   year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                  year_bin[d_gq, d_vehinhh] +
                   year_bin^tranwork_bin +
                   ind1990^year_bin + occ1990^year_bin,
                 subset = (ipums$other8==1),
@@ -203,6 +194,7 @@ To8.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 To8.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                   year_bin^educ_bin +
                   year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                  year_bin[d_gq, d_vehinhh] +
                   ind1990^year_bin + occ1990^year_bin,
                 subset = ((ipums$tranwork_bin==10) & (ipums$other8==1)),
                 ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -211,6 +203,7 @@ To8.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 To8.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                   year_bin^educ_bin +
                   year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                  year_bin[d_gq, d_vehinhh] +
                   ind1990^year_bin + occ1990^year_bin,
                 subset = ((ipums$tranwork_bin==30) & (ipums$other8==1)),
                 ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -218,6 +211,7 @@ To8.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 To8.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                      year_bin^educ_bin +
                      year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                     year_bin[d_gq, d_vehinhh] +
                      ind1990^year_bin + occ1990^year_bin,
                    subset = ((ipums$tranwork_bin==36) & (ipums$other8==1)),
                    ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -225,6 +219,7 @@ To8.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 To8.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    ind1990^year_bin + occ1990^year_bin,
                  subset = ((ipums$tranwork_bin==60) & (ipums$other8==1)),
                  ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -234,6 +229,7 @@ To8.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 Toth.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    year_bin^tranwork_bin +
                    ind1990^year_bin + occ1990^year_bin,
                  subset = ((ipums$transit8!=1) & (ipums$other8!=1)),
@@ -243,6 +239,7 @@ Toth.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 Toth.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    ind1990^year_bin + occ1990^year_bin,
                  subset = ((ipums$tranwork_bin==10) & (ipums$transit8!=1) & (ipums$other8!=1)),
                  ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -251,6 +248,7 @@ Toth.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 Toth.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    ind1990^year_bin + occ1990^year_bin,
                  subset = ((ipums$tranwork_bin==30) & (ipums$transit8!=1) & (ipums$other8!=1)),
                  ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -258,6 +256,7 @@ Toth.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 Toth.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                       year_bin^educ_bin +
                       year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                      year_bin[d_gq, d_vehinhh] +
                       ind1990^year_bin + occ1990^year_bin,
                     subset = ((ipums$tranwork_bin==36) & (ipums$transit8!=1) & (ipums$other8!=1)),
                     ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -265,6 +264,7 @@ Toth.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin +
 Toth.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | czone_year_bin + 
                     year_bin^educ_bin +
                     year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                    year_bin[d_gq, d_vehinhh] +
                     ind1990^year_bin + occ1990^year_bin,
                   subset = ((ipums$tranwork_bin==60) & (ipums$transit8!=1) & (ipums$other8!=1)),
                   ipums, cluster = "czone", weights = ipums$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -290,6 +290,7 @@ rm(ipums)
 P.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  year_bin^tranwork_bin +
                  ind1990^year_bin + occ1990^year_bin,
                ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -297,6 +298,7 @@ P.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 P.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                 year_bin^educ_bin +
                 year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                year_bin[d_gq, d_vehinhh] +
                 ind1990^year_bin + occ1990^year_bin,
               subset = (ipums_0018$tranwork_bin==10),
               ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -304,6 +306,7 @@ P.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 P.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  ind1990^year_bin + occ1990^year_bin,
                subset = (ipums_0018$tranwork_bin==30),
                ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -311,6 +314,7 @@ P.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 P.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  ind1990^year_bin + occ1990^year_bin,
                subset = (ipums_0018$tranwork_bin==36),
                ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -318,6 +322,7 @@ P.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 P.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  ind1990^year_bin + occ1990^year_bin,
                 subset = (ipums_0018$tranwork_bin==60),
                ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -331,6 +336,7 @@ etable(P.all,P.car,P.bus,P.subway,P.walk,
 P8.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  year_bin^tranwork_bin +
                  ind1990^year_bin + occ1990^year_bin,
                 subset = (ipums_0018$transit8==1),
@@ -339,6 +345,7 @@ P8.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 P8.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  ind1990^year_bin + occ1990^year_bin,
                subset = ((ipums_0018$tranwork_bin==10) & (ipums_0018$transit8==1)),
                ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -346,6 +353,7 @@ P8.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 P8.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                  year_bin^educ_bin +
                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
                  ind1990^year_bin + occ1990^year_bin,
                subset = ((ipums_0018$tranwork_bin==30) & (ipums_0018$transit8==1)),
                ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -353,6 +361,7 @@ P8.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 P8.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                     year_bin^educ_bin +
                     year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                    year_bin[d_gq, d_vehinhh] +
                     ind1990^year_bin + occ1990^year_bin,
                   subset = ((ipums_0018$tranwork_bin==36) & (ipums_0018$transit8==1)),
                   ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -369,6 +378,7 @@ P8.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 Po8.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                   year_bin^educ_bin +
                   year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                  year_bin[d_gq, d_vehinhh] +
                   year_bin^tranwork_bin +
                   ind1990^year_bin + occ1990^year_bin,
                 subset = (ipums_0018$other8==1),
@@ -377,6 +387,7 @@ Po8.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 Po8.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                   year_bin^educ_bin +
                   year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                  year_bin[d_gq, d_vehinhh] +
                   ind1990^year_bin + occ1990^year_bin,
                 subset = ((ipums_0018$tranwork_bin==10) & (ipums_0018$other8==1)),
                 ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -384,6 +395,7 @@ Po8.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 Po8.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                   year_bin^educ_bin +
                   year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                  year_bin[d_gq, d_vehinhh] +
                   ind1990^year_bin + occ1990^year_bin,
                 subset = ((ipums_0018$tranwork_bin==30) & (ipums_0018$other8==1)),
                 ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -391,6 +403,7 @@ Po8.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 Po8.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                      year_bin^educ_bin +
                      year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                     year_bin[d_gq, d_vehinhh] +
                      ind1990^year_bin + occ1990^year_bin,
                    subset = ((ipums_0018$tranwork_bin==36) & (ipums_0018$other8==1)),
                    ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -406,6 +419,7 @@ Po8.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 Poth.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    year_bin^tranwork_bin +
                    ind1990^year_bin + occ1990^year_bin,
                  subset = ((ipums_0018$transit8!=1) & (ipums_0018$other8!=1)),
@@ -414,6 +428,7 @@ Poth.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 Poth.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    ind1990^year_bin + occ1990^year_bin,
                  subset = ((ipums_0018$tranwork_bin==10) & (ipums_0018$transit8!=1) & (ipums_0018$other8!=1)),
                  ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -421,6 +436,7 @@ Poth.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 Poth.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                    year_bin^educ_bin +
                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                   year_bin[d_gq, d_vehinhh] +
                    ind1990^year_bin + occ1990^year_bin,
                  subset = ((ipums_0018$tranwork_bin==30) & (ipums_0018$transit8!=1) & (ipums_0018$other8!=1)),
                  ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -428,6 +444,7 @@ Poth.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 Poth.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                       year_bin^educ_bin +
                       year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                      year_bin[d_gq, d_vehinhh] +
                       ind1990^year_bin + occ1990^year_bin,
                     subset = ((ipums_0018$tranwork_bin==36) & (ipums_0018$transit8!=1) & (ipums_0018$other8!=1)),
                     ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
@@ -435,6 +452,7 @@ Poth.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz +
 Poth.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz + 
                     year_bin^educ_bin +
                     year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                    year_bin[d_gq, d_vehinhh] +
                     ind1990^year_bin + occ1990^year_bin,
                   subset = ((ipums_0018$tranwork_bin==60) & (ipums_0018$transit8!=1) & (ipums_0018$other8!=1)),
                   ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)

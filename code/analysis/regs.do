@@ -23,14 +23,14 @@ drop racamind racasian racblk racpacis racwht racnum trantime czwt_tt_orig d_his
 est clear
 
 gen ln_trantime_q99 = ln_trantime
-replace ln_trantime_q99 = ln(99) if empstat!=1
+replace ln_trantime_q99 = ln(99) if !inlist(empstatd,10,14)
 
 gen ln_trantime_q95 = ln_trantime
-replace ln_trantime_q95 = ln(60) if empstat!=1
+replace ln_trantime_q95 = ln(60) if !inlist(empstatd,10,14)
 
 bys czone_year_bin: gegen ltt_czq95_temp = pctile(ln_trantime) [aw=czwt_tt], p(95)
 gen ln_trantime_czq95 = ln_trantime
-replace ln_trantime_czq95 = ltt_czq95_temp if empstat!=1
+replace ln_trantime_czq95 = ltt_czq95_temp if !inlist(empstatd,10,14)
 drop ltt_czq95_temp
 
 ** Main Table: Single Coefficient
@@ -57,15 +57,17 @@ est clear
 gegen puma_yrbncz = group(puma_yrbn czone) // Ensures pumas are within CZs (they should be, but areal merges mess with that)
 
 compress
-drop empstatd labforce  
+drop labforce  
 
 preserve 
-	drop  tranwork_bin linc inczero ind1990 occ1990 division pwpumast pwpuma_yr puma_yrbn puma_yr puma_yrbncz housingcost valueh
+	drop  empstatd tranwork_bin linc inczero ind1990 occ1990 division pwpumast pwpuma_yr puma_yrbn puma_yr puma_yrbncz housingcost valueh
 	export delim using "${DATA}/empirics/data/ipums_smaller_lfp.csv", replace nolab
 restore	
 	
 keep if empstat==1 
-keep if empstatd==10 || empstatd==14
+keep if empstatd==10 | empstatd==14
+
+drop ln_trantime_czq95 ln_trantime_q95 ln_trantime_q99
 
 gen other8 = 0
 gen transit8 = 0

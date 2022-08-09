@@ -1,0 +1,39 @@
+\begin{tabular}{lccccccccccccc}
+\tabularnewline\midrule\midrule
+Dependent Variable:&\multicolumn{13}{c}{ln\_trantime}\\
+Model:&(1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) & (11) & (12) & (13)\\
+\midrule \emph{Variables}&   &   &   &   &   &   &   &   &   &   &   &   &  \\
+$1[\text{Black}] \times t_{2000}$ & 0.121$^{***}$ & 0.125$^{***}$ & 0.072$^{**}$ & 0.022$^{**}$ & 0.155$^{***}$ & 0.081$^{***}$ & 0.079$^{***}$ & 0.058 & 0.186$^{***}$ & 0.048$^{***}$ & 0.042$^{***}$ & 0.058$^{***}$ & 0.268$^{***}$\\
+  &(0.007) & (0.008) & (0.025) & (0.007) & (0.021) & (0.010) & (0.010) & (0.035) & (0.027) & (0.005) & (0.005) & (0.015) & (0.013)\\
+$1[\text{Black}] \times t_{2005--11}$ & 0.105$^{***}$ & 0.104$^{***}$ & 0.080$^{***}$ & 0.037$^{**}$ & 0.135$^{***}$ & 0.070$^{***}$ & 0.069$^{***}$ & 0.059$^{**}$ & 0.158$^{***}$ & 0.034$^{***}$ & 0.029$^{***}$ & 0.076$^{***}$ & 0.187$^{***}$\\
+  &(0.006) & (0.006) & (0.013) & (0.011) & (0.015) & (0.009) & (0.008) & (0.018) & (0.036) & (0.005) & (0.005) & (0.010) & (0.012)\\
+$1[\text{Black}] \times t_{2012--19}$ & 0.080$^{***}$ & 0.076$^{***}$ & 0.069$^{***}$ & 0.034$^{**}$ & 0.085$^{***}$ & 0.045$^{***}$ & 0.041$^{***}$ & 0.053$^{**}$ & 0.136$^{***}$ & 0.023$^{***}$ & 0.017$^{***}$ & 0.075$^{***}$ & 0.147$^{***}$\\
+  &(0.004) & (0.004) & (0.015) & (0.010) & (0.017) & (0.004) & (0.005) & (0.022) & (0.030) & (0.004) & (0.004) & (0.010) & (0.011)\\
+\midrule \emph{Fixed-effects}&   &   &   &   &   &   &   &   &   &   &   &   &  \\
+puma\_yrbncz & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+year\_bin-educ\_bin & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+year\_bin & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+year\_bin-tranwork\_bin & Yes &  &  &  &  & Yes &  &  &  & Yes &  &  & \\
+ind1990-year\_bin & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+occ1990-year\_bin & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+\midrule \emph{Varying Slopes}&   &   &   &   &   &   &   &   &   &   &   &   &  \\
+female (year\_bin) & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+age (year\_bin) & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+age2 (year\_bin) & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+d\_marr (year\_bin) & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+d\_head (year\_bin) & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+child\_1or2 (year\_bin) & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+child\_gteq3 (year\_bin) & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+linc (year\_bin) & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+inczero (year\_bin) & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+d\_gq (year\_bin) & Yes & Yes & Yes & Yes &  & Yes & Yes & Yes &  & Yes & Yes & Yes & Yes\\
+d\_vehinhh (year\_bin) & Yes & Yes & Yes & Yes &  & Yes & Yes & Yes &  & Yes & Yes & Yes & Yes\\
+\midrule \emph{Fit statistics}&  & & & & & & & & & & & & \\
+Observations & 4,679,100&3,844,123&209,789&286,316&168,743&2,605,071&2,443,058&65,138&53,409&29,513,107&27,969,466&244,834&907,781\\
+R$^2$ & 0.21546&0.10242&0.13829&0.29046&0.19075&0.14870&0.10302&0.15258&0.25646&0.14678&0.10173&0.19695&0.25165\\
+Within R$^2$ & 0.00194&0.00178&0.00200&0.00068&0.00221&0.00077&0.00073&0.00114&0.00291&0.00016&0.00012&0.00141&0.00411\\
+\midrule\midrule\multicolumn{14}{l}{\emph{Clustered (czone) standard-errors in parentheses}}\\
+\multicolumn{14}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+
+

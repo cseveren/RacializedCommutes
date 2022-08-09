@@ -8,7 +8,7 @@ set scheme plotplainblind
 do		"${DGIT}/code/analysis/parse_sample.do"
 
 keep if empstat==1 
-keep if empstatd==10 || empstatd==14
+keep if empstatd==10 | empstatd==14
 
 // Make smaller for speed/ease
 drop racamind racasian racblk racpacis racwht racnum trantime czwt_tt_orig d_hisp d_aapi d_amin samp_blw samp_hiw samp_aaw samp_aiw d_completed_college d_completed_high_school d_southern_state age_bin d_white sex
@@ -63,10 +63,10 @@ frame change default
 
 
 local demog 	female i.educ_bin age age2 d_marr d_head child_1or2 child_gteq3
+local cargq 	d_gq d_vehinhh
 local transpo	i.tranwork_bin
-local work		linc i.inczero 
 	
-reghdfe ln_trantime 1.d_black#i.i_vigntile ib10.i_vigntile `demog' `transpo' `work' if year_bin==1980 [aw=czwt_tt], a(czone_year_bin occ1990 ind1990) vce(cluster czone)
+reghdfe ln_trantime 1.d_black#i.i_vigntile ib10.i_vigntile `demog' `cargq' `transpo' if year_bin==1980 [aw=czwt_tt], a(czone_year_bin occ1990 ind1990) vce(cluster czone)
 
 frame change regvalues
 foreach v of numlist 1/20 {
@@ -76,7 +76,7 @@ foreach v of numlist 1/20 {
 	}
 frame change default
 
-reghdfe ln_trantime 1.d_black#i.i_vigntile ib10.i_vigntile `demog' `transpo' `work' if year_bin==2019 [aw=czwt_tt], a(czone_year_bin occ1990 ind1990) vce(cluster czone)
+reghdfe ln_trantime 1.d_black#i.i_vigntile ib10.i_vigntile `demog' `cargq' `transpo' if year_bin==2019 [aw=czwt_tt], a(czone_year_bin occ1990 ind1990) vce(cluster czone)
 
 frame change regvalues
 foreach v of numlist 1/20 {
@@ -118,9 +118,9 @@ twoway (rcap upper_1 lower_1 vigntile, lstyle(ci) lcolor(black%80)) ///
 	ytitle("Racialized Difference") xtitle("Income Centile (20 bins)") ylabel(0[0.1]0.4, nogrid) ///
 	xlabel(0(10)100,nogrid) yline(0, lc(gray) lp(dot)) ///
 	legend(order(2 "1980 - Controls: CZ" 	///
+				 6 "1980 - Controls: CZ + demo + cargq + mode + work"  ///
 				 4 "2019 - Controls: CZ"	/// 
-				 6 "1980 - Controls: CZ + demo + mode + work"  ///
-				 8 "2019 - Controls: CZ + demo + mode + work") rows(2) pos(6)) 
+				 8 "2019 - Controls: CZ + demo + cargq + mode + work") rows(2) pos(6)) 
 graph export "${DGIT}/results/${SAMPLE}/plots/income_all.png", replace
 
 clear frames

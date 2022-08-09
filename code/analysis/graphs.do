@@ -25,7 +25,7 @@ set scheme plotplainblind
 do		"${DGIT}/code/analysis/parse_sample.do"
 
 keep if empstat==1 
-keep if empstatd==10 || empstatd==14
+keep if empstatd==10 | empstatd==14
 
 /*------------------------------------------------------------------------------
 	Unconditional plots of raw data
@@ -361,9 +361,9 @@ restore
 1) year
 2) year + cz
 3) year + cz + demo
-4) year + cz + mode
-5) year + cz + demo + mode
-6) year + cz + demo + mode + work
+4) year + cz + demo + cargq
+5) year + cz + demo + cargq + mode
+6) year + cz + demo + cargq + mode + work
 
 Then each of the above, by mode
 ------------------------------------------------------------------------------*/
@@ -396,6 +396,7 @@ frame change regvalues
 frame change default
 
 local demog 	female i.educ_bin age age2 d_marr d_head child_1or2 child_gteq3
+local cargq 	d_gq d_vehinhh
 local transpo	i.tranwork_bin
 local work		linc i.inczero 
 
@@ -420,7 +421,7 @@ foreach y of local years_list {
 	frame change default
 	
 	// (3) year + CZ + demo
-	qui reghdfe ln_trantime i.d_black `demog' ///
+	qui reghdfe ln_trantime i.d_black `demog'  ///
 		if year == `y' [aw=czwt_tt], a(czone) vce(cluster czone)
 	frame change regvalues
 		replace beta_race_3 = _b[1.d_black] if year == `y'		
@@ -428,8 +429,8 @@ foreach y of local years_list {
 		replace e_df_3 = e(df_r) if year == `y'
 	frame change default
 
-	// (4) year + CZ + mode
-	qui reghdfe ln_trantime i.d_black `transpo' ///
+	// (4) year + CZ + demo + cargq
+	qui reghdfe ln_trantime i.d_black `demog' `cargq'  ///
 		if year == `y' [aw=czwt_tt], a(czone) vce(cluster czone)
 	frame change regvalues
 		replace beta_race_4 = _b[1.d_black] if year == `y'		
@@ -437,8 +438,8 @@ foreach y of local years_list {
 		replace e_df_4 = e(df_r) if year == `y'
 	frame change default
 	
-	// (5) year + CZ + demo + mode
-	qui reghdfe ln_trantime i.d_black `demog' `transpo' ///
+	// (5) year + CZ + demo + cargq + mode
+	qui reghdfe ln_trantime i.d_black `demog' `cargq' `transpo' ///
 		if year == `y' [aw=czwt_tt], a(czone) vce(cluster czone)
 	frame change regvalues
 		replace beta_race_5 = _b[1.d_black] if year == `y'		
@@ -446,8 +447,8 @@ foreach y of local years_list {
 		replace e_df_5 = e(df_r) if year == `y'
 	frame change default
 	
-	// (6) year + CZ + demo + mode + work
-	qui reghdfe ln_trantime i.d_black `demog' `transpo' `work' ///
+	// (6) year + CZ + demo + cargq + mode + work
+	qui reghdfe ln_trantime i.d_black `demog' `cargq' `transpo' `work' ///
 		if year == `y' [aw=czwt_tt], a(czone ind1990 occ1990) vce(cluster czone)
 	frame change regvalues
 		replace beta_race_6 = _b[1.d_black] if year == `y'		
@@ -491,9 +492,9 @@ twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black)) ///
 	legend(order(2 "1: year" 	///
 				 4 "2: year + CZ"	/// 
 				 6 "3: year + CZ + demo"  ///
-				 8 "4: year + CZ + mode"  ///
-				 10 "5: year + CZ + demo + mode" ///
-				 12 "6: year + CZ + demo + mode + work") rows(2) pos(6))	 
+				 8 "4: year + CZ + demo + cargq"  ///
+				 10 "5: year + CZ + demo + cargq + mode" ///
+				 12 "6: year + CZ + demo + cargq + mode + work") rows(3) pos(6))	 
 graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols.png", replace
 
 twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
@@ -507,8 +508,8 @@ twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 	ytitle("Racialized Difference") xtitle("Census Year") ylabel(0[0.05]0.3, nogrid) xlabel(,nogrid) yline(0, lc(gray) lp(dot)) ///
 	legend(order(2 "None" 	///
 				 4 "CZ"	/// 
-				 6 "CZ + mode"  ///
-				 8 "CZ + Demo + Mode + Work") rows(2) pos(6) subtitle("Controls:     ", pos(9)))	 
+				 6 "CZ + demo + cargq"  ///
+				 8 "CZ + demo + cargq + mode + work") rows(2) pos(6) subtitle("Controls:     ", pos(9)))	 
 graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_simpler.png", replace
 
 frame change default
@@ -555,7 +556,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 			replace year = `y' if mi(year)
 			local i = `i'+1
 		}
-		foreach n in 1 2 3 6 {
+		foreach n in 1 2 4 6 {
 			gen beta_race_`n' = .
 			gen se_race_`n' = .
 			gen	e_df_`n' = .
@@ -564,6 +565,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 	frame change default
 
 	local demog 	female i.educ_bin age age2 d_marr d_head child_1or2 child_gteq3
+	local cargq 	d_gq d_vehinhh
 	local transpo	i.tranwork_bin
 	local work		linc i.inczero 
 
@@ -585,13 +587,13 @@ foreach mm in 10 30 36 37 50 60 70 {
 			replace e_df_2 = e(df_r) if year == `y'
 		frame change default
 		
-		// (3) year + CZ + demo
-		qui reghdfe ln_trantime i.d_black `demog' ///
+		// (4) year + CZ + demo + cargq
+		qui reghdfe ln_trantime i.d_black `demog' `cargq'  ///
 			if year == `y' & tranwork_bin==`mm' [aw=czwt_tt], a(czone) vce(cluster czone)
 		frame change regvalues
-			replace beta_race_3 = _b[1.d_black] if year == `y'		
-			replace se_race_3 = _se[1.d_black] if year == `y'
-			replace e_df_3 = e(df_r) if year == `y'
+			replace beta_race_4 = _b[1.d_black] if year == `y'		
+			replace se_race_4 = _se[1.d_black] if year == `y'
+			replace e_df_4 = e(df_r) if year == `y'
 		frame change default
 
 		// (6) year + CZ + demo + mode + work
@@ -643,12 +645,12 @@ foreach mm in 10 30 36 37 50 60 70 {
 	drop if mi(beta_race_1)
 
 	reshape long beta_race_ se_race_ e_df_, i(year) j(spec)
-	foreach n in 1 2 3 6 {
+	foreach n in 1 2 4 6 {
 		replace year = year+(`n'-3.5)*0.08 if spec==`n'
 	}
 	reshape wide
 
-	foreach n in 1 2 3 6 {
+	foreach n in 1 2 4 6 {
 		gen upper_race_`n' = beta_race_`n' + invttail(e_df_`n', 0.025)*se_race_`n'
 		gen lower_race_`n' = beta_race_`n' - invttail(e_df_`n', 0.025)*se_race_`n'
 	}
@@ -657,15 +659,15 @@ foreach mm in 10 30 36 37 50 60 70 {
 		(line beta_race_1 year, lstyle(solid) lcolor(black))  ///
 		(rcap upper_race_2 lower_race_2 year , lstyle(ci) lcolor(red)) ///
 		(line beta_race_2 year, lpattern(solid) lcolor(red))  ///
-		(rcap upper_race_3 lower_race_3 year , lstyle(ci) lcolor(orange)) ///
-		(line beta_race_3 year, lstyle(solid) lcolor(orange))  ///
+		(rcap upper_race_4 lower_race_4 year , lstyle(ci) lcolor(orange)) ///
+		(line beta_race_4 year, lstyle(solid) lcolor(orange))  ///
 		(rcap upper_race_6 lower_race_6 year , lstyle(ci) lcolor(blue)) ///
 		(line beta_race_6 year, lpattern(solid) lcolor(blue)),  ///
 		ytitle("Commuting Gap") xtitle("Census Year") ylabel(, nogrid) xlabel(,nogrid) yline(0, lc(gray) lp(dot)) /// ///
 		legend(order(2 "1: year" 	///
 					 4 "2: year + CZ"	/// 
-					 6 "3: year + CZ + demo"  ///
-					 8 "6: year + CZ + demo + work") rows(1) pos(6))	 
+					 6 "3: year + CZ + demo + cargq"  ///
+					 8 "6: year + CZ + demo + cargq + work") rows(1) pos(6))	 
 	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'.png", replace
 	
 	twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
@@ -677,7 +679,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 		ytitle("Racialized Difference") xtitle("Census Year") ylabel(, nogrid) xlabel(,nogrid) yline(0, lc(gray) lp(dot)) /// ///
 		legend(order(2 "None" 	///
 					 4 "CZ"	/// 
-					 6 "CZ + demo + work") rows(1) pos(6) subtitle("Controls:   ", pos(9)))	 
+					 6 "CZ + demo + cargq + work") rows(1) pos(6) subtitle("Controls:   ", pos(9)))	 
 	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'_simpler.png", replace
 
 	clear
