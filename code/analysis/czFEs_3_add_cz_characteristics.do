@@ -97,10 +97,9 @@ tempfile ginis
 save "`ginis'", replace
 
 
-foreach ff in blacknonblack blackwhite {
+foreach ff in blackwhite {
 	
 	use "${DATA}/empirics/output/czyrcoeffs_`ff'_all.dta"
-	drop _merge
 	*use "$ROOT/empirics/output/czyrcoeffs_blackwhite_all.dta"
 	
 	merge 1:1 czone_year_bin using  "${DATA}/empirics/output/czyr_averages.dta"
