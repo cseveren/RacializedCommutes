@@ -1,5 +1,7 @@
 clear all
 
+!mkdir "${DGIT}/results/${SAMPLE}/plots/citylevel"
+
 use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
 set scheme plotplainblind
 
@@ -7,7 +9,7 @@ set scheme plotplainblind
 do		"${DGIT}/code/analysis/parse_sample.do"
 
 keep if empstat==1 
-keep if empstatd==10 || empstatd==14
+keep if empstatd==10 | empstatd==14
 
 gen other8 = 0
 gen transit8 = 0
@@ -40,6 +42,7 @@ est clear
 
 ** Macros for covariates
 local demog 	female i.educ_bin age age2 d_marr d_head child_1or2 child_gteq3
+local cargq 	d_gq d_vehinhh
 local transpo	i.tranwork_bin
 local work		linc i.inczero 
 	/* work also include ind1990 and occ1990 as absorbed FEs */
@@ -48,10 +51,10 @@ tempfile cz_coeffs
 tempfile puma_coeffs
 
 ** Run Models
-quietly parmby "reghdfe ln_trantime d_black `demog' `transpo' `work' [aw=czwt_tt], a(ind1990 occ1990)", by(czone_year_bin) saving("`cz_coeffs'", replace)
+quietly parmby "reghdfe ln_trantime d_black `demog' `transpo' `cargq' `work' [aw=czwt_tt], a(ind1990 occ1990)", by(czone_year_bin) saving("`cz_coeffs'", replace)
 
 keep if year_bin>=2000
-quietly parmby "reghdfe ln_trantime d_black `demog' `transpo' `work' [aw=czwt_tt], a(ind1990 occ1990 puma_yrbncz)", by(czone_year_bin) saving("`puma_coeffs'", replace)
+quietly parmby "reghdfe ln_trantime d_black `demog' `transpo' `cargq' `work' [aw=czwt_tt], a(ind1990 occ1990 puma_yrbncz)", by(czone_year_bin) saving("`puma_coeffs'", replace)
 
 use "`cz_coeffs'", clear
 keep if parm == "d_black"

@@ -1,8 +1,17 @@
-* 2CALT
+* City Calcs
 
 use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
 
-** DO NOT OMIT OUT OF SAMPLE, AS THESE ARE AGGREGATE VARIABLES **
+gcollapse (mean) perc_black=d_black valueh housingcost (median) valueh_p50=valueh housingcost_p50=housingcost ///
+			[aw=czwt_tt], by(czone_year_bin)
+			
+tempfile agg_total
+save	"`agg_total'", replace
+
+use "${DATA}/empirics/output/ipums_vars_standardized.dta", clear
+
+keep if empstat==1 
+keep if empstatd==10 | empstatd==14
 
 ** Define Vars **
 gen modeshare_car = (tranwork_bin==10)
@@ -32,17 +41,21 @@ gen ln_time_car = ln(time_car)
 
 gen czwt_tt_black = czwt_tt*d_black
 
-** COLLAPSE 
-collapse (rawsum) czwt_tt n_obs n_black=d_black popemp_black=czwt_tt_black (mean) perc_black=d_black modeshare_* time_* ///
+** COLLAPSE from employed sample
+gcollapse (rawsum) czwt_tt n_obs n_black=d_black popemp_black=czwt_tt_black (mean) modeshare_* time_* ///
 			(sd) sd_ltime=ln_trantime sd_time=trantime sd_ltime_auto=ln_time_car sd_time_auto=time_car ///
 			(p1) p1_time=trantime (p5) p5_time=trantime (p10) p10_time=trantime (p20) p20_time=trantime ///
 			(p80) p80_time=trantime (p90) p90_time=trantime (p95) p95_time=trantime (p99) p99_time=trantime ///
-			(mean) valueh housingcost (median) valueh_p50=valueh housingcost_p50=housingcost ///
 			[aw=czwt_tt], by(czone_year_bin)
 
 rename czwt_tt popemp
 
+merge 1:1 czone_year_bin using "`agg_total'"
+drop _merge
+
 save "${DATA}/empirics/output/czyr_averages.dta", replace
+
+
 
 clear
 
@@ -84,7 +97,7 @@ tempfile ginis
 save "`ginis'", replace
 
 
-foreach ff in blacknonblack blackwhite {
+foreach ff in blackwhite {
 	
 	use "${DATA}/empirics/output/czyrcoeffs_`ff'_all.dta"
 	*use "$ROOT/empirics/output/czyrcoeffs_blackwhite_all.dta"

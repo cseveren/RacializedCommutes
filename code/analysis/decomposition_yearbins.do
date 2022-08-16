@@ -11,7 +11,7 @@ set scheme plotplainblind
 do		"${DGIT}/code/analysis/parse_sample.do"
 
 keep if empstat==1 
-keep if empstatd==10 || empstatd==14
+keep if empstatd==10 | empstatd==14
 
 /*------------------------------------------------------------------------------
 	Decomposition done manually
@@ -38,21 +38,22 @@ foreach y in 1980 1990 2000 2010 2019 {
 		local fullbeta = _b[d_black]
 
 		local demog female i.educ_bin age age2 d_marr d_head child_1or2 child_gteq3
+		local cargq d_gq d_vehinhh
 		local transpo i.tranwork_bin
 		local work linc inczero 
 
 		*reghdfe ln_trantime d_black `demog' `transpo' `work' [aw=czwt_tt], a(czone_year_bin ind1990 occ1990) vce(cluster czone)
 
 		** Step 1: run reghdfe on full sample to estimate pooled betas, saving FEs
-		foreach var in female educ_bin age age2 d_marr d_head child_1or2 child_gteq3 tranwork_bin linc inczero { 
+		foreach var in female educ_bin age age2 d_marr d_head child_1or2 child_gteq3 d_gq d_vehinhh tranwork_bin linc inczero { 
 			gen beta_`var' = .
 		}
 
-		eststo betas1, title("fullsample"): reghdfe ln_trantime d_black `demog' `transpo' `work' [aw=czwt_tt], ///
+		eststo betas1, title("fullsample"): reghdfe ln_trantime d_black `demog' `cargq' `transpo' `work' [aw=czwt_tt], ///
 			a(beta_czone_year_bin=czone_year_bin beta_ind1990=ind1990 beta_occ1990=occ1990) vce(cluster czone)
 		estadd scalar divval = 100*(_b[d_black]/`fullbeta')
 			
-		foreach var in female age age2 d_marr d_head child_1or2 child_gteq3 linc inczero { 
+		foreach var in female age age2 d_marr d_head child_1or2 child_gteq3 d_gq d_vehinhh linc inczero { 
 			replace beta_`var' = _b[`var']
 		}
 		forvalues n = 1/4 {
@@ -65,7 +66,7 @@ foreach y in 1980 1990 2000 2010 2019 {
 
 
 		** Step 2: divide covariates into groups and calculate x*beta
-		foreach var in female age age2 d_marr d_head child_1or2 child_gteq3 linc inczero { 
+		foreach var in female age age2 d_marr d_head child_1or2 child_gteq3 d_gq d_vehinhh linc inczero { 
 			gen xb_`var' = `var' * beta_`var'
 		}
 		gen xb_educ_bin=.
@@ -83,7 +84,7 @@ foreach y in 1980 1990 2000 2010 2019 {
 
 		** Step 3: regress xb on d_black and multiply gammas by betas
 		// Reg using each covariate separately
-		foreach var in female educ_bin age age2 d_marr d_head child_1or2 child_gteq3 tranwork_bin linc inczero czone_year_bin ind1990 occ1990 {
+		foreach var in female educ_bin age age2 d_marr d_head child_1or2 child_gteq3 d_gq d_vehinhh tranwork_bin linc inczero czone_year_bin ind1990 occ1990 {
 			eststo, title("`var'"): reg xb_`var' d_black [aw=czwt_tt], vce(cluster czone)
 		}
 
@@ -95,11 +96,12 @@ foreach y in 1980 1990 2000 2010 2019 {
 
 		// Reg using each group (demographics, transit, work, cz)
 		gen xb_demographics = xb_female + xb_educ_bin + xb_age + xb_age2 + xb_d_marr + xb_d_head + xb_child_1or2 + xb_child_gteq3 
+		gen xb_cargq = xb_d_gq + xb_d_vehinhh
 		gen xb_transit = xb_tranwork_bin
 		gen xb_work = xb_linc + xb_inczero + xb_ind1990 + xb_occ1990
 		gen xb_cz = xb_czone_year_bin 
 
-		foreach group in demographics transit work cz {	
+		foreach group in cz demographics cargq transit work {	
 			eststo, title("`group'"): reg xb_`group' d_black [aw=czwt_tt], vce(cluster czone)
 			estadd scalar divval = 100*(_b[d_black]/`fullbeta')
 		}
