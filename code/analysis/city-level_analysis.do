@@ -1,5 +1,11 @@
 use "${DATA}/empirics/output/czyrall_blackwhite.dta", clear
 
+preserve
+	keep czone largestcity
+	drop if largestcity==""
+	export delim using "${DATA}/empirics/output/czone_list.csv"
+restore
+
 sum r6_estimate [aw=popemp] if year==1980 // Measures of Delta^Unexplained
 sum r6_estimate [aw=popemp] if year==2019 // Measures of Delta^Unexplained
 
