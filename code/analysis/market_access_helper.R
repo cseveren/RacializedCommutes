@@ -1,10 +1,92 @@
 
 ## FUNCTIONS
+
+################
+# wrapper
+
+findspeedma <- function(dfolder, cz, yr, popfile, timefile, theta, dmin=1, plot=F, long=F) {
+  if (theta>=0) {
+    stop("Error: theta must be less than zero.")
+  }
+  
+  # prep distance info
+  if (yr==2019) {
+    dinfo <- prepdata2(dfolder,cz,2018)
+  } else {
+    dinfo <- prepdata2(dfolder,cz,yr)
+  }
+
+  # prep population data
+  popemp <- popfile[popfile$zcta %in% dinfo$zips]
+  popemp <- popemp[order(popemp),]
+
+  # prep average time
+  avetime <- timefile[timefile$czone==cz & timefile$year==yr]$time_all
+  
+  # rescale: because priority is the scale of phi_R, shift sum(LR) to match sum(LF)
+  LF <- matrix(as.numeric(popemp$emp), 1, dinfo$nz)
+  LR <- matrix(as.numeric(popemp$pop_emp), dinfo$nz, 1)
+  
+  if (length(as.numeric(popemp$emp))!=dinfo$nz ||
+      length(as.numeric(popemp$pop_emp))!=dinfo$nz ||
+      dinfo$nz==1) {
+    return(list(speed = NA,
+                MAwhite = NA,
+                MAblack = NA,
+                nz = NA,
+                niter = NA)) 
+  }
+  
+  LF[is.na(LF)] <- 0
+  LR[is.na(LR)] <- 0
+  
+  LR <- LR * sum(LF) / sum(LR)
+
+  # prep and transform distance matrix
+  dinfo$dmat[dinfo$dmat<dmin] <- dmin
+  dmattheta <- dinfo$dmat^(theta)
+
+  # find phis; plot if necessary for troublshooting
+  phi <- findphi(dmattheta, LF, LR, dinfo$nz)
+  if (plot==T) {
+    plot(phi$Ri, phi$Fj)
+  }
+
+  # calculate average distance and average speed
+  avedist <- sum((LR/sum(LR)) * (phi$Ri^-1) * rSums(rExpand(dinfo$dmat * dmattheta, LF/phi$Fj, dinfo$nz), dinfo$nz))
+  avespeed <- avedist / avetime
+  
+  # calculate MA differential
+  pRwhite <- as.numeric(popemp$nh_white)/sum(as.numeric(popemp$nh_white))
+  pRblack <- as.numeric(popemp$nh_black)/sum(as.numeric(popemp$nh_black))
+  
+  MAwhite <- sum(avespeed^(-theta) * phi$Ri * pRwhite)
+  MAblack <- sum(avespeed^(-theta) * phi$Ri * pRblack)
+  
+  if (long==TRUE) {
+    return(list(speed = avespeed,
+                MAwhite = MAwhite,
+                MAblack = MAblack,
+                nz = dinfo$nz,
+                niter = phi$iter,
+                LR=LR, LRraw=popemp$pop_emp, LF=LF, LFraw=popemp$emp, dmat=dinfo$dmat))
+  }
+  
+  return(list(speed = avespeed,
+              MAwhite = MAwhite,
+              MAblack = MAblack,
+              nz = dinfo$nz,
+              niter = phi$iter))
+}
+
+
 ################
 # data prep functions 
 
 prepdata <- function(rawmat) {
-  zips <- rawmat$zcta
+  zips <- as.character(rawmat$zcta) %>%
+    sapply(function(x){if(nchar(x)<5){paste0("0",x)}else{x}}) %>%
+    as.vector()
   n <- ncol(rawmat)-1
   
   dmat <- as.matrix(rawmat[,1:n+1])   
@@ -14,6 +96,19 @@ prepdata <- function(rawmat) {
        nz=n)
 }
 
+prepdata2 <- function(folder, cz, yr) {
+  distmat <- read.csv(paste0(folder, as.character(cz), "_dist_", as.character(yr), ".csv"))
+  prepdata(distmat)
+}
+
+popdata <- function(pfile) {
+  
+  pdata <- fread(pfile) %>%
+    mutate(zcta = as.character(zcta))
+  pdata$zcta <- sapply(pdata$zcta, function(x){if(nchar(x)<5){paste0("0",x)}else{x}})
+  
+  return(pdata)
+}
 
 ################
 # solver functions
@@ -25,7 +120,7 @@ findphi <- function(dmthta, LF, LR, nz, tol=0.00000001) {
   conv <- 1
   iter <- 1
   
-  while (conv>tol && iter<1000) {
+  while (conv>tol && iter<10000) {
     
     phiR_z <- rSums(rExpand(dmthta, LF/phiF_k, nz), nz)
     phiF_z <- cSums(cExpand(dmthta, LR/phiR_k, nz), nz)
@@ -36,21 +131,22 @@ findphi <- function(dmthta, LF, LR, nz, tol=0.00000001) {
       phiR_k <- phiR_z
       phiF_k <- phiF_z
     } else {
-      phiR_k <- vecUpdate(phiR_k, phiR_z, 0.75)
-      phiF_k <- vecUpdate(phiF_k, phiF_z, 0.75)
+      phiR_k <- vecUpdate(phiR_k, phiR_z, 0.8)
+      phiF_k <- vecUpdate(phiF_k, phiF_z, 0.8)
     }
-    
+
     iter <- iter+1
   }
   
   if(conv<=tol){
     print(paste0("Phi's converged to <=", tol, " in ", iter-1, " iterations."))
     olist <- list(Ri = phiR_z,
-                  Fj = phiF_z)
+                  Fj = phiF_z,
+                  iter = iter)
     
     return(olist)
   } else {
-    stop("Phi's did not converge in <1000 iterations.") 
+    stop("Phi's did not converge in <10000 iterations.") 
   }
 }
 
