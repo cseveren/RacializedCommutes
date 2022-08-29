@@ -42,10 +42,15 @@ keep if min_popemp>=1000
 keep if n_yrs==5
 * leaves 1705 obs for 341 CZs *
 
-gen lnma = ln(ma_ratio_citysp)
+gen lnma_citysp = ln(ma_ratio_citysp)
+gen lnma_common = ln(ma_ratio_common)
+
 
 reghdfe r6_estimate ma_ratio_citysp [aw=popemp_black], a(czone yri) vce(cluster czone)
-reghdfe r6_estimate lnma [aw=popemp_black], a(czone yri) vce(cluster czone)
+reghdfe r6_estimate lnma_citysp [aw=popemp_black], a(czone yri) vce(cluster czone)
+
+reghdfe r6_estimate ma_ratio_common [aw=popemp_black], a(czone yri) vce(cluster czone)
+reghdfe r6_estimate lnma_common [aw=popemp_black], a(czone yri) vce(cluster czone)
 
 *************
 ** Table 4, Part I
