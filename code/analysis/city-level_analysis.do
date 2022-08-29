@@ -1,19 +1,51 @@
-use "${DATA}/empirics/output/czyrall_blackwhite.dta", clear
+local vlist speed dist ma_white ma_black ratio
 
-preserve
-	keep czone largestcity
-	drop if largestcity==""
-	export delim using "${DATA}/empirics/output/czone_list.csv"
-restore
+import delim "${DATA}/empirics/output/market_access_cityspecificelasticity.csv", clear
+drop v1 niter
+destring speed-ratio, i("NA") replace
+
+foreach v of local vlist {
+	rename `v' ma_`v'_citysp
+}
+tempfile ma_citysp
+save "`ma_citysp'"
+
+import delim "${DATA}/empirics/output/market_access_commonelasticity.csv", clear
+drop v1 niter
+destring speed-ratio, i("NA") replace
+
+foreach v of local vlist {
+	rename `v' ma_`v'_common
+}
+tempfile ma_common
+save "`ma_common'"
+
+use "${DATA}/empirics/output/czyrall_blackwhite.dta", clear
 
 sum r6_estimate [aw=popemp] if year==1980 // Measures of Delta^Unexplained
 sum r6_estimate [aw=popemp] if year==2019 // Measures of Delta^Unexplained
 
 do 	"${DGIT}/code/analysis/city-level_prep.do"
 
+merge 1:1 czone year using "`ma_citysp'"
+drop if _merge==2
+drop _merge
+merge 1:1 czone year using "`ma_common'"
+drop if _merge==2
+drop _merge
+
 export delim using "${DATA}/empirics/output/czyrall_blackwhite_cleaned.csv", replace
 est clear
 
+keep if min_n_black>50
+keep if min_popemp>=1000
+keep if n_yrs==5
+* leaves 1705 obs for 341 CZs *
+
+gen lnma = ln(ma_ratio_citysp)
+
+reghdfe r6_estimate ma_ratio_citysp [aw=popemp_black], a(czone yri) vce(cluster czone)
+reghdfe r6_estimate lnma [aw=popemp_black], a(czone yri) vce(cluster czone)
 
 *************
 ** Table 4, Part I

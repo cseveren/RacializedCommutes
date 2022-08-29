@@ -28,11 +28,6 @@ sum r6_stderr if min_n_black > 50 & min_n_black <= 75
 sum r6_stderr if min_n_black > 75 & min_n_black <= 100
 sum r6_stderr if min_n_black > 100
 
-keep if min_n_black>50
-keep if min_popemp>=1000
-keep if n_yrs==5
-* leaves 1705 obs for 341 CZs *
-
 ** Variable Creation
 gen lpop = ln(popemp)
 gen lmodeshare_anytransit = ln(modeshare_anytransit)

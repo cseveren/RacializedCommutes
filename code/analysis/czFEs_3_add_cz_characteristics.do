@@ -41,8 +41,11 @@ gen ln_time_car = ln(time_car)
 
 gen czwt_tt_black = czwt_tt*d_black
 
+gen inc = exp(linc)
+replace inc=. if inczero==1
+
 ** COLLAPSE from employed sample
-gcollapse (rawsum) czwt_tt n_obs n_black=d_black popemp_black=czwt_tt_black (mean) modeshare_* time_* ///
+gcollapse (rawsum) czwt_tt n_obs n_black=d_black popemp_black=czwt_tt_black (mean) modeshare_* time_* inc ///
 			(sd) sd_ltime=ln_trantime sd_time=trantime sd_ltime_auto=ln_time_car sd_time_auto=time_car ///
 			(p1) p1_time=trantime (p5) p5_time=trantime (p10) p10_time=trantime (p20) p20_time=trantime ///
 			(p80) p80_time=trantime (p90) p90_time=trantime (p95) p95_time=trantime (p99) p99_time=trantime ///
@@ -166,3 +169,13 @@ foreach ff in blackwhite {
 	save "${DATA}/empirics/output/czyrall_`ff'.dta", replace
 	export delim using "${DATA}/empirics/output/czyrall_`ff'.csv", replace
 }
+
+use "${DATA}/empirics/output/czyrall_blackwhite.dta", clear
+
+preserve
+	keep czone largestcity
+	drop if largestcity==""
+	export delim using "${DATA}/empirics/output/czone_list.csv"
+restore
+
+clear

@@ -4,9 +4,21 @@
 ################
 # wrapper
 
-findspeedma <- function(dfolder, cz, yr, popfile, timefile, theta, dmin=1, plot=F, long=F) {
-  if (theta>=0) {
-    stop("Error: theta must be less than zero.")
+findspeedma <- function(dfolder, cz, yr, popfile, timefile, theta, kappa, dmin=1, plot=F, long=F, time_elasticity=T) {
+  
+  # prep average time and wage
+  avetime <- timefile[timefile$czone==cz & timefile$year==yr]$time_all
+  avew <- timefile[timefile$czone==cz & timefile$year==yr]$inc
+  
+  # commuting elasticity and logic
+  if (time_elasticity==T) {
+    commute_elast <- avetime*theta*kappa
+  } else if (time_elasticity==F) {
+    commute_elast <- theta*kappa
+  }
+  
+  if (commute_elast>=0) {
+    stop("Error: Commuting elasticity (avetime*theta*kappa OR theta*kappa) must be less than zero.")
   }
   
   # prep distance info
@@ -20,9 +32,6 @@ findspeedma <- function(dfolder, cz, yr, popfile, timefile, theta, dmin=1, plot=
   popemp <- popfile[popfile$zcta %in% dinfo$zips]
   popemp <- popemp[order(popemp),]
 
-  # prep average time
-  avetime <- timefile[timefile$czone==cz & timefile$year==yr]$time_all
-  
   # rescale: because priority is the scale of phi_R, shift sum(LR) to match sum(LF)
   LF <- matrix(as.numeric(popemp$emp), 1, dinfo$nz)
   LR <- matrix(as.numeric(popemp$pop_emp), dinfo$nz, 1)
@@ -31,6 +40,7 @@ findspeedma <- function(dfolder, cz, yr, popfile, timefile, theta, dmin=1, plot=
       length(as.numeric(popemp$pop_emp))!=dinfo$nz ||
       dinfo$nz==1) {
     return(list(speed = NA,
+                dist = NA,
                 MAwhite = NA,
                 MAblack = NA,
                 nz = NA,
@@ -44,39 +54,65 @@ findspeedma <- function(dfolder, cz, yr, popfile, timefile, theta, dmin=1, plot=
 
   # prep and transform distance matrix
   dinfo$dmat[dinfo$dmat<dmin] <- dmin
-  dmattheta <- dinfo$dmat^(theta)
+  dmattheta <- dinfo$dmat^(commute_elast)
 
-  # find phis; plot if necessary for troublshooting
+  # find phis (phi-tildes); plot if necessary for troublshooting
   phi <- findphi(dmattheta, LF, LR, dinfo$nz)
   if (plot==T) {
     plot(phi$Ri, phi$Fj)
   }
 
   # calculate average distance and average speed
-  avedist <- sum((LR/sum(LR)) * (phi$Ri^-1) * rSums(rExpand(dinfo$dmat * dmattheta, LF/phi$Fj, dinfo$nz), dinfo$nz))
+  avedist <- sum((LR/sum(LR)) * (phi$Ri^-1) * rSums(rExpand(dinfo$dmat * dmattheta, LF/(phi$Fj), dinfo$nz), dinfo$nz))
   avespeed <- avedist / avetime
   
-  # calculate MA differential
-  pRwhite <- as.numeric(popemp$nh_white)/sum(as.numeric(popemp$nh_white))
-  pRblack <- as.numeric(popemp$nh_black)/sum(as.numeric(popemp$nh_black))
+  # scale for wage
+  varsigma <- avew^(-1) * sum( (LF/sum(LF)) * (LF/(phi$Fj))^(1/theta), na.rm = TRUE) 
   
-  MAwhite <- sum(avespeed^(-theta) * phi$Ri * pRwhite)
-  MAblack <- sum(avespeed^(-theta) * phi$Ri * pRblack)
+  truphi_Ri <- phi$Ri/( (varsigma^theta) * (avespeed^(commute_elast)) )
+  truphi_Fj <- phi$Fj/( (varsigma^theta) * (avespeed^(commute_elast)) )
+  
+  # truephis
+  #truephi_Ri <- 
+  
+  # calculate MA differential
+  pRwhite <- as.numeric(popemp$nh_white)/sum(as.numeric(popemp$nh_white), na.rm = TRUE)
+  pRblack <- as.numeric(popemp$nh_black)/sum(as.numeric(popemp$nh_black), na.rm = TRUE)
+  
+  MAwhite <- sum(truphi_Ri * pRwhite, na.rm = TRUE)
+  MAblack <- sum(truphi_Ri * pRblack, na.rm = TRUE)
+  
+  if (MAwhite==0) {
+    MAwhite <- NA
+  }
+  if (MAblack==0) {
+    MAblack <- NA
+  }
   
   if (long==TRUE) {
     return(list(speed = avespeed,
+                dist = avedist,
                 MAwhite = MAwhite,
                 MAblack = MAblack,
                 nz = dinfo$nz,
                 niter = phi$iter,
-                LR=LR, LRraw=popemp$pop_emp, LF=LF, LFraw=popemp$emp, dmat=dinfo$dmat))
+                LR=LR,
+                LRraw=popemp$pop_emp,
+                LF=LF,
+                LFraw=popemp$emp,
+                truphi_Ri = truphi_Ri,
+                truphi_Fj = truphi_Fj,
+                rawphi_Ri = phi$Ri,
+                rawphi_Fj = phi$Fj,
+                dmat=dinfo$dmat))
+  } else {
+    return(list(speed = avespeed,
+                dist = avedist,
+                MAwhite = MAwhite,
+                MAblack = MAblack,
+                nz = dinfo$nz,
+                niter = phi$iter))
   }
-  
-  return(list(speed = avespeed,
-              MAwhite = MAwhite,
-              MAblack = MAblack,
-              nz = dinfo$nz,
-              niter = phi$iter))
 }
 
 
@@ -112,7 +148,7 @@ popdata <- function(pfile) {
 
 ################
 # solver functions
-findphi <- function(dmthta, LF, LR, nz, tol=0.00000001) {
+findphi <- function(dmthta, LF, LR, nz, tol=1e-8) {
   
   phiR_k <- rep(1000, 1, nz) 
   phiF_k <- rep(1000, 1, nz) 
