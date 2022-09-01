@@ -16,6 +16,10 @@ else if "`c(username)'" == "RNCNS02" {
 	global DATA "C:/Dropbox/Dropbox/Data_Projects/RacialCommutingGap"
 	global DGIT "C:/GitHub/RacializedCommutes"
 } 
+else if "`c(username)'" == "Chris.Severen" {
+	global DATA "C:/Users/Chris.Severen/Dropbox/Data_Projects/RacialCommutingGap"
+	global DGIT "C:/GitHub/RacializedCommutes"
+} 
 else if "`c(username)'" == "C1NHS01" {
 	global DATA "C:/Dropbox/Dropbox (Phil Research)/RacialCommutingGap"
 }

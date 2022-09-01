@@ -1,19 +1,56 @@
-use "${DATA}/empirics/output/czyrall_blackwhite.dta", clear
+local vlist speed dist ma_white ma_black ratio
 
-preserve
-	keep czone largestcity
-	drop if largestcity==""
-	export delim using "${DATA}/empirics/output/czone_list.csv"
-restore
+import delim "${DATA}/empirics/output/market_access_cityspecificelasticity.csv", clear
+drop v1 niter
+destring speed-ratio, i("NA") replace
+
+foreach v of local vlist {
+	rename `v' ma_`v'_citysp
+}
+tempfile ma_citysp
+save "`ma_citysp'"
+
+import delim "${DATA}/empirics/output/market_access_commonelasticity.csv", clear
+drop v1 niter
+destring speed-ratio, i("NA") replace
+
+foreach v of local vlist {
+	rename `v' ma_`v'_common
+}
+tempfile ma_common
+save "`ma_common'"
+
+use "${DATA}/empirics/output/czyrall_blackwhite.dta", clear
 
 sum r6_estimate [aw=popemp] if year==1980 // Measures of Delta^Unexplained
 sum r6_estimate [aw=popemp] if year==2019 // Measures of Delta^Unexplained
 
 do 	"${DGIT}/code/analysis/city-level_prep.do"
 
+merge 1:1 czone year using "`ma_citysp'"
+drop if _merge==2
+drop _merge
+merge 1:1 czone year using "`ma_common'"
+drop if _merge==2
+drop _merge
+
 export delim using "${DATA}/empirics/output/czyrall_blackwhite_cleaned.csv", replace
 est clear
 
+keep if min_n_black>50
+keep if min_popemp>=1000
+keep if n_yrs==5
+* leaves 1705 obs for 341 CZs *
+
+gen lnma_citysp = ln(ma_ratio_citysp)
+gen lnma_common = ln(ma_ratio_common)
+
+
+reghdfe r6_estimate ma_ratio_citysp [aw=popemp_black], a(czone yri) vce(cluster czone)
+reghdfe r6_estimate lnma_citysp [aw=popemp_black], a(czone yri) vce(cluster czone)
+
+reghdfe r6_estimate ma_ratio_common [aw=popemp_black], a(czone yri) vce(cluster czone)
+reghdfe r6_estimate lnma_common [aw=popemp_black], a(czone yri) vce(cluster czone)
 
 *************
 ** Table 4, Part I
@@ -131,11 +168,61 @@ est clear
 
 
 ** Note, uses different weighting scheme to maintain overall features
-foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
+foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est lnma_citysp {
 	reghdfe	r6_estimate `v' [aw=popemp], a(czone year) vce(cluster czone)
 	local decomp_`v' = _b[`v']
 }
 
+local vlist speed dist ma_white ma_black ratio
+
+import delim "${DATA}/empirics/output/market_access_cityspecificelasticity.csv", clear
+drop v1 niter
+destring speed-ratio, i("NA") replace
+
+foreach v of local vlist {
+	rename `v' ma_`v'_citysp
+}
+tempfile ma_citysp
+save "`ma_citysp'"
+
+* New
+{
+	frame create allcities
+	frame change allcities	
+
+	use "${DATA}/empirics/output/czyrall_blackwhite.dta"
+	
+		
+	merge 1:1 czone year using "`ma_citysp'"
+	drop if _merge==2
+	drop _merge
+
+	gen lnma_citysp = ln(ma_ratio_citysp)
+	
+	gen yri = 1 if year==1980
+	replace yri = 2 if year==1990
+	replace yri = 3 if year==2000
+	replace yri = 4 if year==2010
+	replace yri = 5 if year==2019
+
+	xtset czone yri
+	
+	foreach v of varlist lnma_citysp {
+		sum `v' [aw=popemp] if year==1990 
+			local m1990_`v' = r(mean)
+		sum `v' [aw=popemp] if year==2019 
+			local m2019_`v' = r(mean)
+		
+		local change_`v' = `decomp_`v''*(`m2019_`v''-`m1990_`v'')
+		di `change_`v''
+	}
+}	
+
+frame change default
+frame drop allcities
+
+
+* Older
 {
 	frame create allcities
 	frame change allcities	
