@@ -115,7 +115,7 @@ gen 	czwt = afactor * perwt
 compress
 
 *****************************
-** 4) Append
+** 4) Append and adjust housing quality
 
 append 	using "`data_2001_2011'"
 drop	m2000 m2010
@@ -126,10 +126,47 @@ replace czone = 3300 if puma==77777
 replace afactor = 1 if puma==77777
 replace czwt = afactor * perwt if puma==77777
 
-// drop 	cntygp98 puma puma2000 m2000 puma1990 m1990 ctygrp1980 m1980
-
-*replace year = 2010 if year==2011 GOT TO CUT THIS
 tab year [aw=czwt]
+
+replace valueh = . if valueh==9999999
+replace rentgrs = . if rentgrs==0
+
+gen lhval = ln(valueh)
+gen lrent = ln(rentgrs)
+gen lhval_adj = .
+gen lrent_adj = .
+
+levelsof puma2000, local(geo2000)
+
+foreach g of local geo2000 {
+	quietly reg lhval ib1990.bltyr_est i2005.year ib3.rooms_bed ib6.rooms_total if inrange(year, 2005, 2011) & puma2000==`g' [aw=czwt], notab
+	quietly predict hvalhat if e(sample)==1, xb
+	replace lhval_adj = lhval - hvalhat + _b[_cons] if e(sample)==1
+	drop hvalhat
+	
+	quietly reg lrent ib1990.bltyr_est i2005.year ib2.rooms_bed ib4.rooms_total if inrange(year, 2005, 2011) & puma2000==`g' [aw=czwt], notab
+	quietly predict renthat if e(sample)==1, xb
+	replace lrent_adj = lrent - renthat + _b[_cons] if e(sample)==1
+	drop renthat
+}
+
+levelsof puma2010, local(geo2010)
+
+foreach g of local geo2010 {
+	quietly reg lhval ib1990.bltyr_est i2012.year ib3.rooms_bed ib6.rooms_total if inrange(year, 2012, 2019) & puma2010==`g' [aw=czwt], notab
+	quietly predict hvalhat if e(sample)==1, xb
+	replace lhval_adj = lhval - hvalhat + _b[_cons] if e(sample)==1
+	drop hvalhat
+	
+	quietly reg lrent ib1990.bltyr_est i2012.year ib2.rooms_bed ib4.rooms_total if inrange(year, 2012, 2019) & puma2010==`g' [aw=czwt], notab
+	quietly predict renthat if e(sample)==1, xb
+	replace lrent_adj = lrent - renthat + _b[_cons] if e(sample)==1
+	drop renthat
+}
+
+drop 	rooms_bed rooms_total bltyr_est
+
+recast float lhval_adj lrent_adj
 
 compress
 
@@ -153,8 +190,6 @@ compress
 
 replace costelec = . if costelec>9000
 replace costgas = . if costgas>9000
-replace valueh = . if valueh==9999999
-replace rentgrs = . if rentgrs==0
 
 gen 	housingcost = .
 replace	housingcost = 0.0785*valueh + costelec + costgas if ownershpd==12 | ownershpd==13
