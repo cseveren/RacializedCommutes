@@ -14,14 +14,47 @@ keep if min_popemp>=1000
 keep if n_yrs==5
 * leaves 1705 obs for 341 CZs *
 
-reghdfe r6_estimate ma_ratio_citysp [aw=popemp_black], a(czone yri) vce(cluster czone)
-reghdfe r6_estimate lnma_citysp [aw=popemp_black], a(czone yri) vce(cluster czone)
 
-reghdfe r6_estimate ma_ratio_common_wwage [aw=popemp_black], a(czone yri) vce(cluster czone)
-reghdfe r6_estimate lnma_common [aw=popemp_black], a(czone yri) vce(cluster czone)
+est clear
+
+***********
+** New Market Access Results
+eststo: reghdfe r6_estimate ma_ratio_citysp [aw=popemp_black], a(czone yri) vce(cluster czone)
+eststo: reghdfe r6_estimate lnma_citysp [aw=popemp_black], a(czone yri) vce(cluster czone)
+eststo: reghdfe r6_estimate ma_ratio_common_wwage [aw=popemp_black], a(czone yri) vce(cluster czone)
+eststo: reghdfe r6_estimate lnma_common [aw=popemp_black], a(czone yri) vce(cluster czone)
+
+eststo: reghdfe r6_estimate ma_ratio_citysp if bigger==1 [aw=popemp_black], a(czone yri) vce(cluster czone)
+eststo: reghdfe r6_estimate lnma_citysp if bigger==1 [aw=popemp_black], a(czone yri) vce(cluster czone)
+eststo: reghdfe r6_estimate ma_ratio_common_wwage if bigger==1 [aw=popemp_black], a(czone yri) vce(cluster czone)
+eststo: reghdfe r6_estimate lnma_common if bigger==1 [aw=popemp_black], a(czone yri) vce(cluster czone)
+
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_marketaccess_rrd.tex", ///
+	b(4) se(4) nocon mlabels(,titles) replace bookt f legend r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) ///
+	legend rename(ma_ratio_citysp macc lnma_citysp lmacc ma_ratio_common_wwage macc lnma_common lmacc)
+est clear	
+
+foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
+	eststo, title("`v'"): reghdfe	ma_ratio_citysp `v' [aw=popemp_black], a(czone year) vce(cluster czone)
+	local explvar `explvar' `v' var
+}
+
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_marketaccess_mechanism_all.tex", ///
+	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace bookt f r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
+est clear
+	
+foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
+	eststo, title("`v'"): reghdfe	ma_ratio_citysp `v' if bigger==1 [aw=popemp_black], a(czone year) vce(cluster czone)
+	local explvar `explvar' `v' var
+}
+
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_marketaccess_mechanism_big.tex", ///
+	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace bookt f r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
+est clear
+
 
 *************
-** Table 4, Part I
+** Summary of RDD, Part I
 
 estpost tabstat r6_estimate [aw=popemp_black], by(year) stat(count mean sd min max) nototal
 
@@ -36,14 +69,14 @@ esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_summarynoweights.tex", 
 
 est clear
 
-** Table 4, Part II
-estpost tabstat popemp perc_black diss gini_blk gini_wht tot_centrality_OG len_ab modeshare_anytransit time_car valueh comm_hval_corr_est [aw=n_black], stat(count mean sd min max) col(stat)
+** Summary of RDD, Part II
+estpost tabstat popemp perc_black ma_ratio_citysp ma_ratio_common_wwage diss gini_blk gini_wht tot_centrality_OG len_ab modeshare_anytransit time_car valueh comm_hval_corr_est [aw=n_black], stat(count mean sd min max) col(stat)
 esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_summaryurbanform.tex", ///
 	booktabs cells("count mean(fmt(3)) sd(fmt(3)) min(fmt(3)) max(fmt(3))") replace
 est clear
 
 *************
-** Table 5
+** Population and Racial Composition
 foreach y of numlist 1980 2019 {
 	eststo: reg r6_estimate lpop if year==`y' [aw=popemp_black], vce(cluster czone)
 	eststo: reg r6_estimate lpop perc_black if year==`y' [aw=popemp_black], vce(cluster czone)
@@ -61,9 +94,9 @@ esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table5.csv", ///
 est clear
 
 *************
-** Table 6 (just larger cities)
+** Correlates of RRD
 local explvar
-foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car {
+foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
 	eststo, title("`v'"): reghdfe	r6_estimate `v' if bigger==1 [aw=popemp_black], a(czone year) vce(cluster czone)
 	local explvar `explvar' `v' var
 }
@@ -75,7 +108,7 @@ esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6_nocontrol.csv", 
 est clear
 
 local explvar
-foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car {
+foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
 	eststo, title("`v'"): reghdfe	r6_estimate `v' lpop if bigger==1 [aw=popemp_black], a(czone year) vce(cluster czone)
 	local explvar `explvar' `v' var
 }
@@ -87,7 +120,7 @@ esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6_wcontrol.csv", /
 est clear
 
 *************
-** Table 7 (Housing IV)
+** Housing IV
 
 eststo: reghdfe r6_estimate lhval [aw=popemp_black], a(czone yri) vce(cluster czone)
 eststo: reghdfe r6_estimate lhval lpop perc_black [aw=popemp_black], a(czone yri) vce(cluster czone)
@@ -134,7 +167,7 @@ est clear
 
 *****Components of variation
 
-
+/*
 ** Note, uses different weighting scheme to maintain overall features
 foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est lnma_citysp {
 	reghdfe	r6_estimate `v' [aw=popemp], a(czone year) vce(cluster czone)
@@ -264,10 +297,11 @@ frame change default
 frame drop allcities
 //
 // macro drop decomp_* mean_*
-
+*/
 
 ***** MAKE BIG APPENDIX TABLES
-
+** May drop in final version
+/*
 
 local clist perc_black lhval ///
 			modeshare_anytransit time_anytransit time_car lmiles_a lmiles_ab ///
@@ -402,6 +436,6 @@ preserve
 		rename(`explvar') b(3) se(3) nocon mlabels(,titles) replace csv r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
 	est clear
 restore
-
+*/
 
 	
