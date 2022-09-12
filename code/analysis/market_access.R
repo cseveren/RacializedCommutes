@@ -37,7 +37,9 @@ czlist <- unique(czdata$czone)
 
 outframe1 <- data.frame(matrix(ncol=8, nrow=length(yrlist)*length(czlist)))
 outframe2 <- data.frame(matrix(ncol=8, nrow=length(yrlist)*length(czlist)))
+outframe3 <- data.frame(matrix(ncol=8, nrow=length(yrlist)*length(czlist)))
 
+# cz-yr specific time elasticity, full wage data
 i <-1 
 for (y in yrlist) {
   for (c in czlist) {
@@ -58,6 +60,7 @@ colnames(outframe1) <- c("czone","year","speed","dist","MA_white","MA_black","nz
 finalframe1 <- outframe1[order(outframe1$nzips,outframe1$niters), ] %>%
   mutate(ratio = MA_black/MA_white)
 
+# common time elasticity, full wage data
 i <-1 
 for (y in yrlist) {
   for (c in czlist) {
@@ -78,6 +81,30 @@ colnames(outframe2) <- c("czone","year","speed","dist","MA_white","MA_black","nz
 finalframe2 <- outframe2[order(outframe2$nzips,outframe2$niters), ] %>%
   mutate(ratio = MA_black/MA_white)
 
+
+# common time elasticity, no wage data
+i <-1 
+for (y in yrlist) {
+  for (c in czlist) {
+    speedma <- findspeedma(loc, c, y, eval(as.name(paste0("popemp",as.character(y)))), czdata, theta, kappa_elast, time_elasticity=F, common_wage=T)
+    outframe3[i,1] <- c
+    outframe3[i,2] <- y
+    outframe3[i,3] <- speedma$speed
+    outframe3[i,4] <- speedma$dist
+    outframe3[i,5] <- speedma$MAwhite
+    outframe3[i,6] <- speedma$MAblack
+    outframe3[i,7] <- speedma$nz
+    outframe3[i,8] <- speedma$niter
+    i <- i+1
+  }
+}
+
+## write out
+colnames(outframe3) <- c("czone","year","speed","dist","MA_white","MA_black","nzips","niters")
+finalframe3 <- outframe3[order(outframe3$nzips,outframe3$niters), ] %>%
+  mutate(ratio = MA_black/MA_white)
+
+
 write.csv(finalframe1,"./empirics/output/market_access_cityspecificelasticity.csv")
 write.csv(finalframe2,"./empirics/output/market_access_commonelasticity.csv")
-
+write.csv(finalframe3,"./empirics/output/market_access_commonelasticity_nowage.csv")

@@ -62,3 +62,7 @@ xtset czone yri
 gen	bigger = (min_popemp>200000)
 gen bw_gini = gini_blk-gini_wht
 
+** Prep other variables
+
+gen lnma_citysp = ln(ma_ratio_citysp)
+gen lnma_common = ln(ma_ratio_common_wwage)

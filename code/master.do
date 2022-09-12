@@ -76,6 +76,7 @@ do		"${DGIT}/code/analysis/decomposition_yearbins.do"
 do		"${DGIT}/code/analysis/czFEs_1_make_coefficients.do" /* Calls ./czFEs_1A_regs.do */
 do		"${DGIT}/code/analysis/czFEs_2_label_czs.do"
 do		"${DGIT}/code/analysis/czFEs_3_add_cz_characteristics.do"
+do		"${DGIT}/code/analysis/czFEs_4_add_ma_terms.do"
 
 * City-Level Analysis
 do		"${DGIT}/code/build/2_GurenIV.do" 				/* Calls ./1A_additional_var_prep.do */

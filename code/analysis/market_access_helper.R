@@ -4,11 +4,15 @@
 ################
 # wrapper
 
-findspeedma <- function(dfolder, cz, yr, popfile, timefile, theta, kappa, dmin=1, plot=F, long=F, time_elasticity=T) {
+findspeedma <- function(dfolder, cz, yr, popfile, timefile, theta, kappa, dmin=1, plot=F, long=F, time_elasticity=T, common_wage=F) {
   
   # prep average time and wage
   avetime <- timefile[timefile$czone==cz & timefile$year==yr]$time_all
-  avew <- timefile[timefile$czone==cz & timefile$year==yr]$inc
+  if (common_wage==F) {
+    avew <- timefile[timefile$czone==cz & timefile$year==yr]$inc
+  } else if (common_wage==T) {
+    avew = 1
+  }
   
   # commuting elasticity and logic
   if (time_elasticity==T) {
