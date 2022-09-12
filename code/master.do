@@ -88,6 +88,10 @@ do		"${DGIT}/code/analysis/tract_regs.do"
 
 
 
+* TO ADD IN
+do		"${DGIT}/code/analysis/housingprice_ptile_all.do"
+do		"${DGIT}/code/analysis/housingprice_ptile_bycz.do"
+
 
 /*Reference 
   SAMPLE AND RACE/ETHNICITY VARIABLES: 

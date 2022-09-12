@@ -27,7 +27,7 @@ replace powpuma = pwpuma if mi(pwpuma00)
 keep 	year sample serial pernum powpuma pwstate2
 
 tempfile workpuma
-save "`workpuma'", replace
+save "`workpuma'
 clear
 
 use		"${DATA}/empirics/input/ipums80-00_2/ipums1980-2000_all.dta"
@@ -97,14 +97,86 @@ joinby 	puma2000 using "${DATA}/empirics/input/crosswalks/cw_puma2000_czone/cw_p
 gen 	czwt = afactor * perwt
 
 *****************************
-** 4) Append
+** 4) Append and quality adjust housing
 
 append 	using "`data_1990'"
 append 	using "`data_1980'"
 
-drop 	cntygp98 puma m2000 m1990 m1980
+drop m2000 m1990 m1980 puma
 
 tab year [aw=czwt]
+
+replace valueh = . if valueh==9999999
+replace rentgrs = . if rentgrs==0
+
+gen lhval = ln(valueh)
+gen lrent = ln(rentgrs)
+gen lhval_adj = .
+gen lrent_adj = .
+
+preserve
+	keep if year==1980
+	levelsof ctygrp1980, local(geo1980)
+
+	foreach g of local geo1980 {
+		capture quietly reg lhval ib1960.bltyr_est ib3.rooms_bed ib6.rooms_total if ctygrp1980==`g' [aw=czwt], notab
+		capture quietly predict hvalhat if e(sample)==1, xb
+		capture replace lhval_adj = lhval - hvalhat + _b[_cons] if e(sample)==1
+		capture drop hvalhat
+		
+		capture quietly reg lrent ib1960.bltyr_est ib2.rooms_bed ib4.rooms_total if ctygrp1980==`g' [aw=czwt], notab
+		capture quietly predict renthat if e(sample)==1, xb
+		capture replace lrent_adj = lrent - renthat + _b[_cons] if e(sample)==1
+		capture drop renthat
+	}
+	drop 	cntygp98 rooms_bed rooms_total bltyr_est
+	
+	tempfile hd1980
+	save "`hd1980'"
+restore
+
+preserve
+	keep if year==1990
+	levelsof puma1990, local(geo1990)
+
+	foreach g of local geo1990 {
+		capture quietly reg lhval ib1970.bltyr_est ib3.rooms_bed ib6.rooms_total if puma1990==`g' [aw=czwt], notab
+		capture quietly predict hvalhat if e(sample)==1, xb
+		capture replace lhval_adj = lhval - hvalhat + _b[_cons] if e(sample)==1
+		capture drop hvalhat
+		
+		capture quietly reg lrent ib1970.bltyr_est ib2.rooms_bed ib4.rooms_total if puma1990==`g' [aw=czwt], notab
+		capture quietly predict renthat if e(sample)==1, xb
+		capture replace lrent_adj = lrent - renthat + _b[_cons] if e(sample)==1
+		capture drop renthat
+	}
+	drop 	cntygp98 rooms_bed rooms_total bltyr_est
+	
+	tempfile hd1990
+	save "`hd1990'"
+restore
+
+keep if year==2000
+levelsof puma2000, local(geo2000)
+
+foreach g of local geo2000 {
+	capture quietly reg lhval ib1980.bltyr_est ib3.rooms_bed ib6.rooms_total if puma2000==`g' [aw=czwt], notab
+	capture quietly predict hvalhat if e(sample)==1, xb
+	capture replace lhval_adj = lhval - hvalhat + _b[_cons] if e(sample)==1
+	capture drop hvalhat
+	
+	capture quietly reg lrent ib1980.bltyr_est ib2.rooms_bed ib4.rooms_total if puma2000==`g' [aw=czwt], notab
+	capture quietly predict renthat if e(sample)==1, xb
+	capture replace lrent_adj = lrent - renthat + _b[_cons] if e(sample)==1
+	capture drop renthat
+}
+
+drop 	cntygp98 rooms_bed rooms_total bltyr_est
+
+append using "`hd1990'"
+append using "`hd1980'"
+
+recast float lhval_adj lrent_adj
 
 compress
 
@@ -135,8 +207,6 @@ compress
 
 replace costelec = . if costelec>9000
 replace costgas = . if costgas>9000
-replace valueh = . if valueh==9999999
-replace rentgrs = . if rentgrs==0
 
 gen 	housingcost = .
 replace	housingcost = 0.0785*valueh + costelec + costgas if ownershp==1

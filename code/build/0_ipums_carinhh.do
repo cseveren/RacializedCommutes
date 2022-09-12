@@ -13,14 +13,18 @@ quietly infix              ///
   double  cluster   42-54  ///
   double  strata    55-66  ///
   byte    gq        67-67  ///
-  byte    autos     68-68  ///
-  byte    trucks    69-69  ///
-  byte    vehicles  70-70  ///
-  int     pernum    71-74  ///
-  double  perwt     75-84  ///
-  byte    sex       85-85  ///
-  int     age       86-88  ///
-  using "${DATA}/empirics/input/ipums_carinhh/usa_00037.dat"
+  byte    rooms     68-69  ///
+  byte    builtyr   70-70  ///
+  byte    builtyr2  71-72  ///
+  byte    bedrooms  73-74  ///
+  byte    autos     75-75  ///
+  byte    trucks    76-76  ///
+  byte    vehicles  77-77  ///
+  int     pernum    78-81  ///
+  double  perwt     82-91  ///
+  byte    sex       92-92  ///
+  int     age       93-95  ///
+  using "${DATA}/empirics/input/ipums_carinhh/usa_00038.dat"
 
 replace hhwt     = hhwt     / 100
 replace perwt    = perwt    / 100
@@ -40,6 +44,10 @@ label var hhwt     `"Household weight"'
 label var cluster  `"Household cluster for variance estimation"'
 label var strata   `"Household strata for variance estimation"'
 label var gq       `"Group quarters status"'
+label var rooms    `"Number of rooms"'
+label var builtyr  `"Age of structure"'
+label var builtyr2 `"Age of structure, decade"'
+label var bedrooms `"Number of bedrooms"'
 label var autos    `"Automobiles available"'
 label var trucks   `"Trucks and vans available"'
 label var vehicles `"Vehicles available"'
@@ -233,6 +241,102 @@ label define gq_lbl 5 `"Additional households under 2000 definition"', add
 label define gq_lbl 6 `"Fragment"', add
 label values gq gq_lbl
 
+label define rooms_lbl 00 `"N/A"'
+label define rooms_lbl 01 `"1 room"', add
+label define rooms_lbl 02 `"2"', add
+label define rooms_lbl 03 `"3"', add
+label define rooms_lbl 04 `"4"', add
+label define rooms_lbl 05 `"5"', add
+label define rooms_lbl 06 `"6"', add
+label define rooms_lbl 07 `"7"', add
+label define rooms_lbl 08 `"8"', add
+label define rooms_lbl 09 `"9 (9+, 1960-2007)"', add
+label define rooms_lbl 10 `"10"', add
+label define rooms_lbl 11 `"11"', add
+label define rooms_lbl 12 `"12"', add
+label define rooms_lbl 13 `"13"', add
+label define rooms_lbl 14 `"14"', add
+label define rooms_lbl 15 `"15"', add
+label define rooms_lbl 16 `"16"', add
+label define rooms_lbl 17 `"17"', add
+label define rooms_lbl 18 `"18"', add
+label define rooms_lbl 19 `"19"', add
+label define rooms_lbl 20 `"20"', add
+label define rooms_lbl 21 `"21"', add
+label define rooms_lbl 22 `"22"', add
+label define rooms_lbl 23 `"23"', add
+label define rooms_lbl 24 `"24"', add
+label define rooms_lbl 25 `"25"', add
+label define rooms_lbl 26 `"26"', add
+label define rooms_lbl 27 `"27"', add
+label define rooms_lbl 30 `"30"', add
+label values rooms rooms_lbl
+
+label define builtyr_lbl 0 `"N/A"'
+label define builtyr_lbl 1 `"0-1 year old"', add
+label define builtyr_lbl 2 `"2-5 years"', add
+label define builtyr_lbl 3 `"6-10 years"', add
+label define builtyr_lbl 4 `"11-20 years"', add
+label define builtyr_lbl 5 `"21-30 years"', add
+label define builtyr_lbl 6 `"31-40 years (31+ in 1960, 1970)"', add
+label define builtyr_lbl 7 `"41-50 years (41+ in 1980)"', add
+label define builtyr_lbl 8 `"51-60 years (51+ in 1990)"', add
+label define builtyr_lbl 9 `"61+ years"', add
+label values builtyr builtyr_lbl
+
+label define builtyr2_lbl 00 `"N/A"'
+label define builtyr2_lbl 01 `"1939 or earlier"', add
+label define builtyr2_lbl 02 `"1940-1949"', add
+label define builtyr2_lbl 03 `"1950-1959"', add
+label define builtyr2_lbl 04 `"1960-1969"', add
+label define builtyr2_lbl 05 `"1970-1979"', add
+label define builtyr2_lbl 06 `"1980-1989"', add
+label define builtyr2_lbl 07 `"1990-1994 (1990-1999 in the 2005-onward ACS and the PRCS)"', add
+label define builtyr2_lbl 08 `"1995-1999 (1995-1998 in the 2000-2002 ACS)"', add
+label define builtyr2_lbl 09 `"2000-2004 (1999-2002 in the 2000-2002 ACS)"', add
+label define builtyr2_lbl 10 `"2005 (2005 or later in datasets containing 2005, 2006, or 2007 ACS/PRCS data)"', add
+label define builtyr2_lbl 11 `"2006"', add
+label define builtyr2_lbl 12 `"2007"', add
+label define builtyr2_lbl 13 `"2008"', add
+label define builtyr2_lbl 14 `"2009"', add
+label define builtyr2_lbl 15 `"2010"', add
+label define builtyr2_lbl 16 `"2011"', add
+label define builtyr2_lbl 17 `"2012"', add
+label define builtyr2_lbl 18 `"2013"', add
+label define builtyr2_lbl 19 `"2014"', add
+label define builtyr2_lbl 20 `"2015"', add
+label define builtyr2_lbl 21 `"2016"', add
+label define builtyr2_lbl 22 `"2017"', add
+label define builtyr2_lbl 23 `"2018"', add
+label define builtyr2_lbl 24 `"2019"', add
+label define builtyr2_lbl 25 `"2020"', add
+label values builtyr2 builtyr2_lbl
+
+label define bedrooms_lbl 00 `"N/A"'
+label define bedrooms_lbl 01 `"No bedrooms"', add
+label define bedrooms_lbl 02 `"1"', add
+label define bedrooms_lbl 03 `"2"', add
+label define bedrooms_lbl 04 `"3"', add
+label define bedrooms_lbl 05 `"4 (1970-2000, 2000-2007 ACS/PRCS)"', add
+label define bedrooms_lbl 06 `"5+ (1970-2000, 2000-2007 ACS/PRCS)"', add
+label define bedrooms_lbl 07 `"6"', add
+label define bedrooms_lbl 08 `"7"', add
+label define bedrooms_lbl 09 `"8"', add
+label define bedrooms_lbl 10 `"9"', add
+label define bedrooms_lbl 11 `"10"', add
+label define bedrooms_lbl 12 `"11"', add
+label define bedrooms_lbl 13 `"12"', add
+label define bedrooms_lbl 14 `"13"', add
+label define bedrooms_lbl 15 `"14"', add
+label define bedrooms_lbl 16 `"15"', add
+label define bedrooms_lbl 17 `"16"', add
+label define bedrooms_lbl 18 `"17"', add
+label define bedrooms_lbl 19 `"18"', add
+label define bedrooms_lbl 20 `"19"', add
+label define bedrooms_lbl 21 `"20"', add
+label define bedrooms_lbl 22 `"21"', add
+label values bedrooms bedrooms_lbl
+
 label define autos_lbl 0 `"N/A"'
 label define autos_lbl 1 `"No automobile"', add
 label define autos_lbl 2 `"1"', add
@@ -394,7 +498,72 @@ label define age_lbl 130 `"130"', add
 label define age_lbl 135 `"135"', add
 label values age age_lbl
 
-keep year sample serial pernum autos trucks vehicles
+** Building characteristics recoding
+gen bltyr_est = .
+
+*1980
+replace bltyr_est = 1979 if year==1980 & builtyr==1
+replace bltyr_est = 1975 if year==1980 & builtyr==2
+replace bltyr_est = 1970 if year==1980 & builtyr==3
+replace bltyr_est = 1960 if year==1980 & builtyr==4
+replace bltyr_est = 1950 if year==1980 & builtyr==5
+replace bltyr_est = 1940 if year==1980 & builtyr==6
+replace bltyr_est = 1930 if year==1980 & builtyr==7
+
+*1990
+replace bltyr_est = 1989 if year==1990 & builtyr==1
+replace bltyr_est = 1985 if year==1990 & builtyr==2
+replace bltyr_est = 1980 if year==1990 & builtyr==3
+replace bltyr_est = 1970 if year==1990 & builtyr==4
+replace bltyr_est = 1960 if year==1990 & builtyr==5
+replace bltyr_est = 1950 if year==1990 & builtyr==6
+replace bltyr_est = 1940 if year==1990 & builtyr==7
+replace bltyr_est = 1930 if year==1990 & builtyr==8
+
+*2000
+replace bltyr_est = 1999 if year==2000 & builtyr==1
+replace bltyr_est = 1995 if year==2000 & builtyr==2
+replace bltyr_est = 1990 if year==2000 & builtyr==3
+replace bltyr_est = 1980 if year==2000 & builtyr==4
+replace bltyr_est = 1970 if year==2000 & builtyr==5
+replace bltyr_est = 1960 if year==2000 & builtyr==6
+replace bltyr_est = 1950 if year==2000 & builtyr==7
+replace bltyr_est = 1940 if year==2000 & builtyr==8
+replace bltyr_est = 1930 if year==2000 & builtyr==9
+
+* 2005 and later
+foreach y of numlist 2005/2019 {
+	replace bltyr_est = 2005 if year==`y' & builtyr2==10
+	replace bltyr_est = 2000 if year==`y' & builtyr2==9
+	replace bltyr_est = 1990 if year==`y' & builtyr2==7
+	replace bltyr_est = 1980 if year==`y' & builtyr2==6
+	replace bltyr_est = 1970 if year==`y' & builtyr2==5
+	replace bltyr_est = 1960 if year==`y' & builtyr2==4
+	replace bltyr_est = 1950 if year==`y' & builtyr2==3
+	replace bltyr_est = 1940 if year==`y' & builtyr2==2
+	replace bltyr_est = 1930 if year==`y' & builtyr2==1
+}
+local i = 11
+foreach y of numlist 2006/2019 {
+	replace bltyr_est = `y' if inrange(year,2008,2019) & builtyr2==`i'
+	local i = `i'+1
+	display `i'
+}
+
+gen rooms_bed = .
+replace rooms_bed = bedrooms - 1 
+replace rooms_bed = . if bedrooms==0
+replace rooms_bed = 5 if bedrooms>=6 & !mi(bedrooms)
+
+gen rooms_total = .
+replace rooms_total = rooms
+replace rooms_total = . if rooms==0
+replace rooms_total = 9 if rooms>=9 & !mi(rooms)
+
+
+
+** Vehicle recoding 
+keep year sample serial pernum autos trucks vehicles bltyr_est rooms_bed rooms_total
 * recode to something reasonable
 replace vehicles = . if vehicles==0
 replace vehicles = 0 if vehicles==9
