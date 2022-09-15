@@ -1,36 +1,47 @@
-\begin{tabular}{lcccccc}
-\tabularnewline\midrule\midrule
-Dependent Variables:&ln\_trantime&ln\_trantime\_czq95&ln\_trantime&ln\_trantime\_czq95&ln\_trantime&ln\_trantime\_czq95\\
-Model:&(1) & (2) & (3) & (4) & (5) & (6)\\
-\midrule \emph{Variables}&   &   &   &   &   &  \\
-$1[\text{Black}] \times t_{1980}$ & 0.253$^{***}$ & 0.258$^{***}$ & 0.163$^{***}$ & 0.182$^{***}$ & 0.178$^{***}$ & 0.144$^{***}$\\
-  &(0.022) & (0.022) & (0.014) & (0.011) & (0.016) & (0.013)\\
-$1[\text{Black}] \times t_{1990}$ & 0.177$^{***}$ & 0.258$^{***}$ & 0.091$^{***}$ & 0.192$^{***}$ & 0.108$^{***}$ & 0.150$^{***}$\\
-  &(0.028) & (0.024) & (0.019) & (0.013) & (0.020) & (0.014)\\
-$1[\text{Black}] \times t_{2000}$ & 0.163$^{***}$ & 0.276$^{***}$ & 0.077$^{***}$ & 0.205$^{***}$ & 0.094$^{***}$ & 0.174$^{***}$\\
-  &(0.026) & (0.023) & (0.018) & (0.012) & (0.019) & (0.012)\\
-$1[\text{Black}] \times t_{2005--11}$ & 0.134$^{***}$ & 0.205$^{***}$ & 0.054$^{***}$ & 0.147$^{***}$ & 0.075$^{***}$ & 0.122$^{***}$\\
-  &(0.026) & (0.019) & (0.016) & (0.010) & (0.017) & (0.010)\\
-$1[\text{Black}] \times t_{2012--19}$ & 0.111$^{***}$ & 0.175$^{***}$ & 0.034$^{**}$ & 0.119$^{***}$ & 0.057$^{***}$ & 0.098$^{***}$\\
-  &(0.024) & (0.020) & (0.015) & (0.011) & (0.015) & (0.010)\\
-\midrule \emph{Fixed-effects}&   &   &   &   &   &  \\
-year\_bin & Yes & Yes &  &  & Yes & Yes\\
-czone\_year\_bin &  &  & Yes & Yes & Yes & Yes\\
-year\_bin-educ\_bin &  &  &  &  & Yes & Yes\\
-\midrule \emph{Varying Slopes}&   &   &   &   &   &  \\
-female (year\_bin) &  &  &  &  & Yes & Yes\\
-age (year\_bin) &  &  &  &  & Yes & Yes\\
-age2 (year\_bin) &  &  &  &  & Yes & Yes\\
-d\_marr (year\_bin) &  &  &  &  & Yes & Yes\\
-d\_head (year\_bin) &  &  &  &  & Yes & Yes\\
-child\_1or2 (year\_bin) &  &  &  &  & Yes & Yes\\
-child\_gteq3 (year\_bin) &  &  &  &  & Yes & Yes\\
-\midrule \emph{Fit statistics}&  & & & & & \\
-Observations & 31,772,111&42,782,454&31,772,111&42,782,454&31,772,111&42,782,454\\
-R$^2$ & 0.01082&0.01383&0.06749&0.05747&0.07572&0.07982\\
-Within R$^2$ & 0.00452&0.00880&0.00119&0.00443&0.00165&0.00291\\
-\midrule\midrule\multicolumn{7}{l}{\emph{Clustered (czone) standard-errors in parentheses}}\\
-\multicolumn{7}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+
+\begingroup
+\centering
+\begin{tabular}{lcccccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables:                    & ln\_trantime  & ln\_trantime\_czq95   & ln\_trantime  & ln\_trantime\_czq95   & ln\_trantime  & ln\_trantime\_czq95   & ln\_trantime  & ln\_trantime\_czq95\\    
+   Model:                                  & (1)           & (2)                   & (3)           & (4)                   & (5)           & (6)                   & (7)           & (8)\\  
+   \midrule
+   \emph{Variables}\\
+   $1[\text{Black}] \times t_{1980}$       & 0.253$^{***}$ & 0.258$^{***}$         & 0.163$^{***}$ & 0.182$^{***}$         & 0.178$^{***}$ & 0.144$^{***}$         & 0.169$^{***}$ & 0.098$^{***}$\\   
+                                           & (0.022)       & (0.022)               & (0.014)       & (0.011)               & (0.016)       & (0.013)               & (0.012)       & (0.011)\\   
+   $1[\text{Black}] \times t_{1990}$       & 0.177$^{***}$ & 0.258$^{***}$         & 0.091$^{***}$ & 0.192$^{***}$         & 0.108$^{***}$ & 0.150$^{***}$         & 0.103$^{***}$ & 0.098$^{***}$\\   
+                                           & (0.028)       & (0.024)               & (0.019)       & (0.013)               & (0.020)       & (0.014)               & (0.018)       & (0.012)\\   
+   $1[\text{Black}] \times t_{2000}$       & 0.163$^{***}$ & 0.276$^{***}$         & 0.077$^{***}$ & 0.205$^{***}$         & 0.094$^{***}$ & 0.174$^{***}$         & 0.090$^{***}$ & 0.122$^{***}$\\   
+                                           & (0.026)       & (0.023)               & (0.018)       & (0.012)               & (0.019)       & (0.012)               & (0.017)       & (0.011)\\   
+   $1[\text{Black}] \times t_{2005--11}$   & 0.134$^{***}$ & 0.205$^{***}$         & 0.054$^{***}$ & 0.147$^{***}$         & 0.075$^{***}$ & 0.122$^{***}$         & 0.072$^{***}$ & 0.081$^{***}$\\   
+                                           & (0.026)       & (0.019)               & (0.016)       & (0.010)               & (0.017)       & (0.010)               & (0.016)       & (0.010)\\   
+   $1[\text{Black}] \times t_{2012--19}$   & 0.111$^{***}$ & 0.175$^{***}$         & 0.034$^{**}$  & 0.119$^{***}$         & 0.057$^{***}$ & 0.098$^{***}$         & 0.055$^{***}$ & 0.061$^{***}$\\   
+                                           & (0.024)       & (0.020)               & (0.015)       & (0.011)               & (0.015)       & (0.010)               & (0.014)       & (0.011)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   year\_bin                               & Yes           & Yes                   &               &                       & Yes           & Yes                   & Yes           & Yes\\  
+   czone\_year\_bin                        &               &                       & Yes           & Yes                   & Yes           & Yes                   & Yes           & Yes\\  
+   year\_bin-educ\_bin                     &               &                       &               &                       & Yes           & Yes                   & Yes           & Yes\\  
+   \midrule
+   \emph{Varying Slopes}\\
+   female (year\_bin)                      &               &                       &               &                       & Yes           & Yes                   & Yes           & Yes\\  
+   age (year\_bin)                         &               &                       &               &                       & Yes           & Yes                   & Yes           & Yes\\  
+   age2 (year\_bin)                        &               &                       &               &                       & Yes           & Yes                   & Yes           & Yes\\  
+   d\_marr (year\_bin)                     &               &                       &               &                       & Yes           & Yes                   & Yes           & Yes\\  
+   d\_head (year\_bin)                     &               &                       &               &                       & Yes           & Yes                   & Yes           & Yes\\  
+   child\_1or2 (year\_bin)                 &               &                       &               &                       & Yes           & Yes                   & Yes           & Yes\\  
+   child\_gteq3 (year\_bin)                &               &                       &               &                       & Yes           & Yes                   & Yes           & Yes\\  
+   d\_gq (year\_bin)                       &               &                       &               &                       &               &                       & Yes           & Yes\\  
+   d\_vehinhh (year\_bin)                  &               &                       &               &                       &               &                       & Yes           & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                            & 31,772,111    & 42,782,454            & 31,772,111    & 42,782,454            & 31,772,111    & 42,782,454            & 31,772,111    & 42,782,454\\  
+   R$^2$                                   & 0.01082       & 0.01383               & 0.06749       & 0.05747               & 0.07572       & 0.07982               & 0.07746       & 0.09104\\  
+   Within R$^2$                            & 0.00452       & 0.00880               & 0.00119       & 0.00443               & 0.00165       & 0.00291               & 0.00147       & 0.00128\\  
+   \midrule \midrule
+   \multicolumn{9}{l}{\emph{Clustered (czone) standard-errors in parentheses}}\\
+   \multicolumn{9}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
 \end{tabular}
+\par\endgroup
 
 

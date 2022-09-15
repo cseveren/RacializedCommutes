@@ -16,7 +16,7 @@ set scheme plotplainblind
 // Specify sample
 do		"${DGIT}/code/analysis/parse_sample.do"
 
-drop racamind racasian racblk racpacis racwht racnum trantime czwt_tt_orig d_hisp d_aapi d_amin samp_blw samp_hiw samp_aaw samp_aiw d_completed_college d_completed_high_school d_southern_state age_bin d_white sex ownershp rentgrs
+drop racamind racasian racblk racpacis racwht racnum trantime czwt_tt_orig d_hisp d_aapi d_amin samp_blw samp_hiw samp_aaw samp_aiw d_completed_college d_completed_high_school d_southern_state age_bin d_white sex ownershp rentgrs lhval lrent lhval_adj lrent_adj
 
 ** Main analysis **
 

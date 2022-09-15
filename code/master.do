@@ -92,6 +92,7 @@ do		"${DGIT}/code/analysis/tract_regs.do"
 * TO ADD IN
 do		"${DGIT}/code/analysis/housingprice_ptile_all.do"
 do		"${DGIT}/code/analysis/housingprice_ptile_bycz.do"
+do		"${DGIT}/code/analysis/housingcost_inverse.do"
 
 
 /*Reference 
