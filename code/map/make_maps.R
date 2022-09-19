@@ -3,8 +3,8 @@
 ## Ensure that you are working in a fresh session or are otherwise careful
 
 rm(list = ls())
-project_root <- "C:\\Dropbox\\Dropbox\\Data_Projects\\RacialCommutingGap"
-#project_root <- "C:\\Users\\C1NTH01\\Dropbox (Phil Research)\\RacialCommutingGap"
+cdir <- "C:\\Users\\Chris.Severen\\Dropbox\\Data_Projects\\RacialCommutingGap\\"
+gdir <- "C:\\GitHub\\RacializedCommutes\\"
 
 ## Load packages and functions, set wd, and declare useful variables 
 pacman::p_load(tidyverse,
@@ -15,8 +15,8 @@ pacman::p_load(tidyverse,
                maps,
                ggplot2)
 
-setwd(project_root)
-source("./empirics/code/map/function.R")
+setwd(cdir)
+source(paste0(gdir,"code/map/function.R"))
 
 ## Set up mapping 
 rawmap <- st_read("./empirics/data/czone_1990/cz1990.shp") %>%
@@ -37,11 +37,14 @@ mycolours=c("darkblue", "blue", "white","red","darkred")
 
 #gapdata <- read.csv("./empirics/output/czyrall_blackwhite_cleaned.csv")
 gapdata <- read.csv("./empirics/output/czyrall_blackwhite_cleaned.csv") %>%
+  filter(min_n_black>50 & min_popemp>=1000 & n_yrs==5) %>%
   subset(select=c(czone,year,largestcity,r6_estimate)) %>%
   reshape(timevar = "year", 
           idvar = c("czone","largestcity"), 
           direction = "wide" ) %>%
   mutate(r6_diff = r6_estimate.2019 - r6_estimate.1980)
+
+  
 
 ready2map <- left_join(prepmap, gapdata, by=c("cz"= "czone"))
 
@@ -72,9 +75,9 @@ testmap80 <- ready2map %>%
         legend.title.align = 0.5) + 
   labs(fill = "RRD\n(1980)") 
 
-ggsave("empirics/code/map/gap_R6map_1980.pdf")
-ggsave("empirics/code/map/gap_R6map_1980.png")
-knitr::plot_crop("empirics/code/map/gap_R6map_1980.png")
+ggsave(paste0(gdir,"code/map/gap_R6map_1980.pdf"))
+ggsave(paste0(gdir,"code/map/gap_R6map_1980.png"))
+knitr::plot_crop(paste0(gdir,"code/map/gap_R6map_1980.png"))
 
 testmap00 <- ready2map %>%
   ggplot()+
@@ -91,9 +94,9 @@ testmap00 <- ready2map %>%
         legend.title.align = 0.5) + 
   labs(fill = "RRD\n(2000)")
 
-ggsave("empirics/code/map/gap_R6map_2000.pdf")
-ggsave("empirics/code/map/gap_R6map_2000.png")
-knitr::plot_crop("empirics/code/map/gap_R6map_2000.png")
+ggsave(paste0(gdir,"code/map/gap_R6map_2000.pdf"))
+ggsave(paste0(gdir,"code/map/gap_R6map_2000.png"))
+knitr::plot_crop(paste0(gdir,"code/map/gap_R6map_2000.png"))
 
 testmap19 <- ready2map %>%
   ggplot()+
@@ -110,9 +113,9 @@ testmap19 <- ready2map %>%
         legend.title.align = 0.5) + 
   labs(fill = "RRD\n(2019)")
 
-ggsave("empirics/code/map/gap_R6map_2019.pdf")
-ggsave("empirics/code/map/gap_R6map_2019.png")
-knitr::plot_crop("empirics/code/map/gap_R6map_2019.png")
+ggsave(paste0(gdir,"code/map/gap_R6map_2019.pdf"))
+ggsave(paste0(gdir,"code/map/gap_R6map_2019.png"))
+knitr::plot_crop(paste0(gdir,"code/map/gap_R6map_2019.png"))
 
 testmap8019 <- ready2map %>%
   ggplot()+
@@ -130,37 +133,8 @@ testmap8019 <- ready2map %>%
   geom_sf(data=stprep, aes(group=Group.1), color="grey40", size=0.1, alpha=0.1, fill=NA) 
 
 
-ggsave("empirics/code/map/gap_R6map_DIFF.pdf")
-ggsave("empirics/code/map/gap_R6map_DIFF.png")
-knitr::plot_crop("empirics/code/map/gap_R6map_DIFF.png")
+ggsave(paste0(gdir,"code/map/gap_R6map_DIFF.pdf"))
+ggsave(paste0(gdir,"code/map/gap_R6map_DIFF.png"))
+knitr::plot_crop(paste0(gdir,"code/map/gap_R6map_DIFF.png"))
 
 
-
-# system2(command = "pdfcrop",
-#         args = c("empirics/code/map/gap_R6map_1980.pdf",
-#                  "empirics/code/map/gap_R6map_1980_cropped.pdf"))
-
-# 
-# width = 500, height=500, units="px", dpi=300)
-# ggsave("empirics/code/map/gap_R6map_1980.png", width = 500, height=500, units="px", dpi=300)
-# 
-# ggsave("empirics/code/map/gap_R6map_1980.pdf", width = 500, height=500, units="px", dpi=300)
-# ggsave("empirics/code/map/gap_R6map_2000.png", plot=testmap00, width = 500, height=500, units="px", dpi=300)
-# ggsave("empirics/code/map/gap_R6map_2019.pdf", plot=testmap19, width = 500, height=500, units="px", dpi=300)
-# ggsave("empirics/code/map/gap_R6map_longdiff.png", plot=testmap8019, width = 500, height=500, units="px", dpi=300)
-
-
-testmap80 <- stprep %>%
-  ggplot() +
-  geom_sf(aes(group=Group.1), color="grey40", size=0.5, alpha=1, fill=NA) +
-  geom_sf(data=ready2map, aes(fill = r6_estimate.1980), alpha =0.1, col="white", size=0.1) +
-  scale_fill_gradient2(low = "blue",
-                       mid = "white",
-                       high = "red",
-                       midpoint = 0,
-                       limits = c(-0.5,0.5),
-                       na.value = "grey75") +
-  theme_map() +
-  theme(legend.position = c(0.9,0.30),
-        legend.title.align = 0.5) + 
-  labs(fill = "Gap\n(1980)") 

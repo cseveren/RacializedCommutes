@@ -38,7 +38,20 @@ rename transit_obs sh_transit_obs
 rename transit_est sh_transit_est
 
 
-**
+** new style
+est clear
+
+eststo: reghdfe ltt_obs c.sh_blk_obs#i.year, a(year) cluster(czone)
+eststo: reghdfe ltt_est c.sh_blk_est#i.year, a(year) cluster(czone)
+
+eststo: reghdfe ltt_obs c.sh_blk_obs#i.year c.sh_transit_obs#i.year, a(tract10 czone##year) cluster(czone)
+eststo: reghdfe ltt_est c.sh_blk_est#i.year c.sh_transit_est#i.year, a(tract10 czone##year) cluster(czone)
+
+esttab using "${DGIT}/results/${SAMPLE}/tables/trt_analysis_combined.tex", b(3) se(3) nocon label replace bookt f ///
+rename(1980.year#c.sh_blk_obs 1980.year#c.sh_blk_est 1990.year#c.sh_blk_obs 1990.year#c.sh_blk_est 2000.year#c.sh_blk_obs 2000.year#c.sh_blk_est 2010.year#c.sh_blk_obs 2010.year#c.sh_blk_est 2018.year#c.sh_blk_obs 2018.year#c.sh_blk_est)
+
+
+** older style
 est clear
 
 eststo: reghdfe ltt_obs c.sh_blk_obs#i.year, a(year) cluster(czone)

@@ -301,7 +301,7 @@ frame drop allcities
 
 ***** MAKE BIG APPENDIX TABLES
 ** May drop in final version
-/*
+
 
 local clist perc_black lhval ///
 			modeshare_anytransit time_anytransit time_car lmiles_a lmiles_ab ///
@@ -436,6 +436,6 @@ preserve
 		rename(`explvar') b(3) se(3) nocon mlabels(,titles) replace csv r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
 	est clear
 restore
-*/
+
 
 	
