@@ -1,0 +1,48 @@
+
+\begingroup
+\centering
+\begin{tabular}{lccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{5}{c}{ln\_trantime}\\
+   Model:                                  & (1)           & (2)           & (3)           & (4)           & (5)\\  
+   \midrule
+   \emph{Variables}\\
+   $1[\text{Black}] \times t_{2000}$       & 0.059$^{***}$ & 0.053$^{***}$ & 0.064$^{***}$ & 0.016$^{**}$  & 0.222$^{***}$\\   
+                                           & (0.004)       & (0.004)       & (0.010)       & (0.007)       & (0.013)\\   
+   $1[\text{Black}] \times t_{2005--11}$   & 0.038$^{***}$ & 0.032$^{***}$ & 0.066$^{***}$ & 0.024$^{**}$  & 0.168$^{***}$\\   
+                                           & (0.004)       & (0.004)       & (0.006)       & (0.010)       & (0.010)\\   
+   $1[\text{Black}] \times t_{2012--19}$   & 0.030$^{***}$ & 0.022$^{***}$ & 0.063$^{***}$ & 0.027$^{***}$ & 0.127$^{***}$\\   
+                                           & (0.004)       & (0.004)       & (0.006)       & (0.008)       & (0.010)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   puma\_yrbncz-pwpuma\_yr                 & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   year\_bin-educ\_bin                     & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   year\_bin                               & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   year\_bin-tranwork\_bin                 & Yes           &               &               &               & \\  
+   ind1990-year\_bin                       & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   occ1990-year\_bin                       & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   \midrule
+   \emph{Varying Slopes}\\
+   female (year\_bin)                      & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   age (year\_bin)                         & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   age2 (year\_bin)                        & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   d\_marr (year\_bin)                     & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   d\_head (year\_bin)                     & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   child\_1or2 (year\_bin)                 & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   child\_gteq3 (year\_bin)                & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   linc (year\_bin)                        & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   inczero (year\_bin)                     & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   d\_gq (year\_bin)                       & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   d\_vehinhh (year\_bin)                  & Yes           & Yes           & Yes           & Yes           & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                            & 36,772,267    & 34,242,801    & 518,955       & 301,491       & 1,126,620\\  
+   R$^2$                                   & 0.33919       & 0.29578       & 0.27101       & 0.38212       & 0.30828\\  
+   Within R$^2$                            & 0.00032       & 0.00024       & 0.00146       & 0.00040       & 0.00339\\  
+   \midrule \midrule
+   \multicolumn{6}{l}{\emph{Clustered (czone) standard-errors in parentheses}}\\
+   \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+

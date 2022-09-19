@@ -1,7 +1,7 @@
 rm(list = ls())
 
 # Define project directory
-cdir <- "C:/Dropbox/Dropbox/Data_Projects/RacialCommutingGap/"
+cdir <- "C:\\Users\\Chris.Severen\\Dropbox\\Data_Projects/RacialCommutingGap/"
 gdir <- "C:\\GitHub\\RacializedCommutes\\"
 ######################################################
 ## BELOW THIS POINT, code should just run ##
@@ -463,3 +463,54 @@ etable(P8.all,P8.car,P8.bus,P8.subway,P8.walk,
        Poth.all,Poth.car,Poth.bus,Poth.walk,
        keep = "t_", tex=TRUE, digits=3, replace=TRUE, dict = myDict,
        file = paste0(gdir,"\\results\\black-white\\tables\\gap_yearspecificpumas_citygroups.tex") )
+
+
+
+
+## With POW PUMAs
+
+
+
+PW.all <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz^pwpuma_yr + 
+                 year_bin^educ_bin +
+                 year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
+                 year_bin^tranwork_bin +
+                 ind1990^year_bin + occ1990^year_bin,
+               ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
+
+PW.car <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz^pwpuma_yr + 
+                 year_bin^educ_bin +
+                 year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
+                 ind1990^year_bin + occ1990^year_bin,
+               subset = (ipums_0018$tranwork_bin==10),
+               ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
+
+PW.bus <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz^pwpuma_yr + 
+                 year_bin^educ_bin +
+                 year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                 year_bin[d_gq, d_vehinhh] +
+                 ind1990^year_bin + occ1990^year_bin,
+               subset = (ipums_0018$tranwork_bin==30),
+               ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
+
+PW.subway <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz^pwpuma_yr + 
+                    year_bin^educ_bin +
+                    year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                    year_bin[d_gq, d_vehinhh] +
+                    ind1990^year_bin + occ1990^year_bin,
+                  subset = (ipums_0018$tranwork_bin==36),
+                  ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
+
+PW.walk <- feols(ln_trantime ~ i(d_black,i.year_bin, 0) | puma_yrbncz^pwpuma_yr + 
+                  year_bin^educ_bin +
+                  year_bin[female, age, age2, d_marr, d_head, child_1or2, child_gteq3, linc, inczero] +
+                  year_bin[d_gq, d_vehinhh] +
+                  ind1990^year_bin + occ1990^year_bin,
+                subset = (ipums_0018$tranwork_bin==60),
+                ipums_0018, cluster = "czone", weights = ipums_0018$czwt_tt, lean = TRUE, mem.clean = TRUE)
+
+etable(PW.all,PW.car,PW.bus,PW.subway,PW.walk,
+       keep = "t_", tex=TRUE, digits=3, replace=TRUE, dict = myDict,
+       file = paste0(gdir,"\\results\\black-white\\tables\\gap_yearspecificpowpumas.tex") )
