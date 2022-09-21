@@ -522,7 +522,7 @@ local years_list 1980 1990 2000 2005 ///
 				 2014 2015 2016 2017 ///
 				 2018 2019
 				 
-foreach mm in 10 30 36 37 50 60 70 {
+foreach mm in 10 30 36 37 50 60 70 99 {
 
 	if `mm' == 10 {
 		local mode = "car"
@@ -545,7 +545,17 @@ foreach mm in 10 30 36 37 50 60 70 {
 	if `mm' == 70 {
 		local mode = "other"
 	}
+	if `mm' == 99 {
+		local mode = "transit"
+	}
 
+	if `mm' != 99 {
+		local mmm = "tranwork_bin==`mm'"
+	}
+	else {
+		local mmm = "inlist(tranwork_bin,30,36,37)"
+	}
+	
 	frame create regvalues
 	frame change regvalues
 
@@ -572,7 +582,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 	foreach y of local years_list {
 		
 		// (1) year FEs
-		qui reg ln_trantime i.d_black if year == `y' & tranwork_bin==`mm' [aw=czwt_tt], vce(cluster czone)
+		qui reg ln_trantime i.d_black `transpo' if year == `y' & `mmm' [aw=czwt_tt], vce(cluster czone)
 		frame change regvalues
 			replace beta_race_1 = _b[1.d_black] if year == `y'
 			replace se_race_1 = _se[1.d_black] if year == `y'
@@ -580,7 +590,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 		frame change default
 		
 		// (2) year + cz
-		qui reghdfe ln_trantime i.d_black if year == `y' & tranwork_bin==`mm' [aw=czwt_tt], a(czone) vce(cluster czone)
+		qui reghdfe ln_trantime i.d_black `transpo' if year == `y' & `mmm' [aw=czwt_tt], a(czone) vce(cluster czone)
 		frame change regvalues
 			replace beta_race_2 = _b[1.d_black] if year == `y'		
 			replace se_race_2 = _se[1.d_black] if year == `y'
@@ -588,8 +598,8 @@ foreach mm in 10 30 36 37 50 60 70 {
 		frame change default
 		
 		// (4) year + CZ + demo + cargq
-		qui reghdfe ln_trantime i.d_black `demog' `cargq'  ///
-			if year == `y' & tranwork_bin==`mm' [aw=czwt_tt], a(czone) vce(cluster czone)
+		qui reghdfe ln_trantime i.d_black `demog' `cargq' `transpo' ///
+			if year == `y' & `mmm' [aw=czwt_tt], a(czone) vce(cluster czone)
 		frame change regvalues
 			replace beta_race_4 = _b[1.d_black] if year == `y'		
 			replace se_race_4 = _se[1.d_black] if year == `y'
@@ -597,8 +607,8 @@ foreach mm in 10 30 36 37 50 60 70 {
 		frame change default
 
 		// (6) year + CZ + demo + mode + work
-		qui reghdfe ln_trantime i.d_black `demog' `work' ///
-			if year == `y' & tranwork_bin==`mm' [aw=czwt_tt], a(czone ind1990 occ1990) vce(cluster czone)
+		qui reghdfe ln_trantime i.d_black `demog' `cargq' `transpo' `work' ///
+			if year == `y' & `mmm' [aw=czwt_tt], a(czone ind1990 occ1990) vce(cluster czone)
 		frame change regvalues
 			replace beta_race_6 = _b[1.d_black] if year == `y'		
 			replace se_race_6 = _se[1.d_black] if year == `y'
@@ -616,7 +626,7 @@ foreach mm in 10 30 36 37 50 60 70 {
 }
 clear frames 
 		 
-foreach mm in 10 30 36 37 50 60 70 {
+foreach mm in 10 30 36 37 50 60 70 99 {
 
 	if `mm' == 10 {
 		local mode = "car"
@@ -639,6 +649,9 @@ foreach mm in 10 30 36 37 50 60 70 {
 	if `mm' == 70 {
 		local mode = "other"
 	}
+	if `mm' == 99 {
+		local mode = "transit"
+	}
 
 	use "${DATA}/empirics/data/temp_dta/${SAMPLE}/conditional_data_`mode'.dta", clear
 
@@ -655,20 +668,20 @@ foreach mm in 10 30 36 37 50 60 70 {
 		gen lower_race_`n' = beta_race_`n' - invttail(e_df_`n', 0.025)*se_race_`n'
 	}
 
-	twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black)) ///
-		(line beta_race_1 year, lstyle(solid) lcolor(black))  ///
-		(rcap upper_race_2 lower_race_2 year , lstyle(ci) lcolor(red)) ///
-		(line beta_race_2 year, lpattern(solid) lcolor(red))  ///
-		(rcap upper_race_4 lower_race_4 year , lstyle(ci) lcolor(orange)) ///
-		(line beta_race_4 year, lstyle(solid) lcolor(orange))  ///
-		(rcap upper_race_6 lower_race_6 year , lstyle(ci) lcolor(blue)) ///
-		(line beta_race_6 year, lpattern(solid) lcolor(blue)),  ///
-		ytitle("Commuting Gap") xtitle("Census Year") ylabel(, nogrid) xlabel(,nogrid) yline(0, lc(gray) lp(dot)) /// ///
-		legend(order(2 "1: year" 	///
-					 4 "2: year + CZ"	/// 
-					 6 "3: year + CZ + demo + cargq"  ///
-					 8 "6: year + CZ + demo + cargq + work") rows(1) pos(6))	 
-	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'.png", replace
+// 	twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black)) ///
+// 		(line beta_race_1 year, lstyle(solid) lcolor(black))  ///
+// 		(rcap upper_race_2 lower_race_2 year , lstyle(ci) lcolor(red)) ///
+// 		(line beta_race_2 year, lpattern(solid) lcolor(red))  ///
+// 		(rcap upper_race_4 lower_race_4 year , lstyle(ci) lcolor(orange)) ///
+// 		(line beta_race_4 year, lstyle(solid) lcolor(orange))  ///
+// 		(rcap upper_race_6 lower_race_6 year , lstyle(ci) lcolor(blue)) ///
+// 		(line beta_race_6 year, lpattern(solid) lcolor(blue)),  ///
+// 		ytitle("Commuting Gap") xtitle("Census Year") ylabel(, nogrid) xlabel(,nogrid) yline(0, lc(gray) lp(dot)) /// ///
+// 		legend(order(2 "1: year" 	///
+// 					 4 "2: year + CZ"	/// 
+// 					 6 "3: year + CZ + demo + cargq"  ///
+// 					 8 "6: year + CZ + demo + cargq + work") rows(1) pos(6))	 
+// 	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'.png", replace
 	
 	twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 		(scatter beta_race_1 year, connect(l) m(i) lstyle(solid) lcolor(black))  ///
