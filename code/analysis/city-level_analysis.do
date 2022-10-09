@@ -12,10 +12,11 @@ est clear
 keep if min_n_black>50
 keep if min_popemp>=1000
 keep if n_yrs==5
-* leaves 1705 obs for 341 CZs *
+* leaves 1690 obs for 338 CZs *
 
 
 est clear
+
 
 ***********
 ** New Market Access Results
@@ -96,7 +97,7 @@ est clear
 *************
 ** Correlates of RRD
 local explvar
-foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
+foreach v of varlist ma_ratio_citysp diss tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
 	eststo, title("`v'"): reghdfe	r6_estimate `v' if bigger==1 [aw=popemp_black], a(czone year) vce(cluster czone)
 	local explvar `explvar' `v' var
 }
@@ -108,7 +109,7 @@ esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6_nocontrol.csv", 
 est clear
 
 local explvar
-foreach v of varlist diss gini_blk gini_wht tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
+foreach v of varlist ma_ratio_citysp diss tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
 	eststo, title("`v'"): reghdfe	r6_estimate `v' lpop if bigger==1 [aw=popemp_black], a(czone year) vce(cluster czone)
 	local explvar `explvar' `v' var
 }

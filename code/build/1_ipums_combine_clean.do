@@ -180,8 +180,8 @@ drop pwstate2 powpuma
 
 /*
 foreach y of numlist 1980 1990 2000 2010 2019 {
-	unique puma_yr if year_bin==`y'
-	unique pwpuma_yr if year_bin==`y'
+	codebook puma_yr if year_bin==`y'
+	codebook pwpuma_yr if year_bin==`y'
 }
 */
 

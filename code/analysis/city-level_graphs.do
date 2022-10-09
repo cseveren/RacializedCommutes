@@ -2,10 +2,44 @@ use "${DATA}/empirics/output/czyrall_blackwhite.dta", clear
 
 do 	"${DGIT}/code/analysis/city-level_prep.do"
 
+keep if min_n_black>50
+keep if min_popemp>=1000
+keep if n_yrs==5
+* leaves 1690 obs for 338 CZs *
+
 est clear
 
 set scheme plotplainblind
 
+** Motivation for city size restriction
+preserve 
+	gen popcat = .
+	replace popcat = 3 if inrange(min_popemp, 0, 100000)
+	replace popcat = 4 if inrange(min_popemp, 100001, 200000)
+	replace popcat = 5 if inrange(min_popemp, 200001, 500000)
+	replace popcat = 6 if inrange(min_popemp, 500001, 1000000)
+	replace popcat = 7 if inrange(min_popemp, 1000001, 100000000)
+
+
+	collapse (mean) r6_estimate [aw=popemp_black], by(popcat year)
+
+	twoway (line r6_estimate year if popcat==3, lc(gs11) lp(dash)) || ///
+			(line r6_estimate year if popcat==4, lc(ltblue) lp(dash)) || ///
+			(line r6_estimate year if popcat==5, lc(midblue) lp(solid)) || ///
+			(line r6_estimate year if popcat==6, lc(blue) lp(solid)) || ///
+			(line r6_estimate year if popcat==7, lc(navy) lp(solid)), ///
+			yline(0, lc(black) lp(dot)) ylabel(, nogrid) xlabel(, nogrid) ///
+			legend(off) ytitle("Mean Residual Difference (RRD)," "by Minimum Employed Population") xtitle("Year") ///
+			text(-0.011 2005 "<100k", si(medsmall) c(gs11)) ///
+			text(-0.009 2016 "[100k,200k]", si(medsmall) c(ltblue)) ///
+			text(0.0357 1983.5 "(200k, 500k]", si(medsmall) c(midblue)) ///
+			text(0.075 1993.5 "(500k, 1 mil.]", si(medsmall) c(blue)) ///
+			text(0.124 2011 ">1 mil.", si(medsmall) c(navy))
+
+	graph export "${DGIT}/results/${SAMPLE}/plots/rrd_by_population.png", replace
+restore 
+	
+	
 foreach n of numlist 6 {
 	
 	gen L4_r`n'_estimate = L4.r`n'_estimate
@@ -156,3 +190,36 @@ foreach n of numlist 6 {
 	
 }
 	
+
+/*
+	
+gen citytype = 0
+
+replace citytype = 2 if (czone==19400 | /// NYC
+						czone==20500 | /// Boston 
+						czone==24300 | /// Chicago
+						czone==19700 | /// Philadelphia
+						czone==11304 | /// DC
+						czone==37800 | /// SF
+						czone==9100 | /// Atlanta
+						czone==38300) // LA
+
+replace citytype = 1 if (czone==33100 | /// DFW
+						czone==32000 | /// Houston
+						czone==7000 | /// Miami
+						czone==35001 | /// Phoenix
+						czone==39400 | /// Seattle
+						czone==11600 | /// Detroit
+						czone==38000 | /// San Diego
+						czone==21501) // Twin Cities
+
+collapse (mean) r6_estimate[aw=popemp_black], by(citytype year)
+
+**
+twoway (line r6_estimate year if citytype==0) || ///
+		(line r6_estimate year if citytype==1) || ///
+		(line r6_estimate year if citytype==2)
+
+twoway (lpoly r6_estimate lpop if year==2019 [aw=popemp_black], bw(0.5)) || ///
+		(scatter r6_estimate lpop if year==2019 & inrange(r6_estimate, -0.3, 0.3))
+*/
