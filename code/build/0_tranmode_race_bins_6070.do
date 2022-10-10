@@ -41,8 +41,8 @@ gen modeshare_railroad = (tranwork_bin==37)
 gen modeshare_walked = (tranwork_bin==60)
 gen modeshare_other = (tranwork_bin==70)
 
-gen modeshare_anytransit = max(modeshare_bus, modeshare_subway, modeshare_railroad)
-
+g byte modeshare_anytransit = max(modeshare_bus, modeshare_subway, modeshare_railroad)
+g byte modeshare_anywalkother = max(modeshare_walked, modeshare_other)
 
 **Race Variables**
 

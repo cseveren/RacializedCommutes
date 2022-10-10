@@ -156,6 +156,8 @@ preserve
 	g byte modeshare_other = (tranwork_bin==70)
 
 	g byte modeshare_anytransit = max(modeshare_bus, modeshare_subway, modeshare_railroad)
+	g byte modeshare_anywalkother = max(modeshare_walked, modeshare_bicycle, modeshare_other)
+
 
 	collapse (mean) modeshare_* [aw=czwt_tt], by(year d_black) 	 	
 		
@@ -167,7 +169,8 @@ preserve
 	twoway (line modeshare_car year if d_black == 0, lstyle(solid) lcolor(orange))  ///
 		(line modeshare_car year if  d_black == 1, lpattern(dash) lcolor(orange)),  ///
 		ytitle("Mode Share") xtitle("Census Year") ylabel(0.5(0.1)1.0, grid gmax) ///
-		legend(order(1 "Auto - (White Commuters)" 2 "Auto - (Black Commuters)") rows(1) pos(6)) 
+		legend(order(1 "Auto (White Commuters)" 2 "Auto (Black Commuters)") rows(1) pos(6)) ///
+		yline(1, lc(black) lp(solid))
 		
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_auto.png", replace		
 			
@@ -179,7 +182,8 @@ preserve
 		(line modeshare_railroad year if d_black == 1, lpattern(dash) lcolor(yellow)),  ///
 		ytitle("Mode Share") xtitle("Census Year") ///
 		legend(order(1 "Bus or Streetcar" 	///
-					 3 "Subway or Elevated" 5 "Railroad") rows(1) pos(6))
+					 3 "Subway or Elevated" 5 "Railroad") rows(1) pos(6)) ///
+		yline(0, lc(black) lp(solid))			 
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_transits.png", replace					 
 
 	twoway (line modeshare_bicycle year if d_black == 0, lstyle(solid) lcolor(cyan))  ///
@@ -190,8 +194,22 @@ preserve
 		(line modeshare_other year if d_black == 1, lpattern(dash) lcolor(green)),  ///
 		ytitle("Mode Share") xtitle("Census Year") ///
 		legend(order(1 "Bicycle"    ///
-					 3 "Walked Only" 5 "Other") rows(1) pos(6))				 
+					 3 "Walked Only" 5 "Other") rows(1) pos(6))	///
+		yline(0, lc(black) lp(solid))
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_bikewalkother.png", replace				 
+	
+				
+	twoway (line modeshare_anytransit year if d_black == 0, lstyle(solid) lcolor(cyan))  ///
+		(line modeshare_anytransit year if d_black == 1, lpattern(dash) lcolor(cyan))  ///
+		(line modeshare_anywalkother year if d_black == 0, lstyle(solid) lcolor(blue))  ///
+		(line modeshare_anywalkother year if d_black == 1, lpattern(dash) lcolor(blue)),  ///
+		ytitle("Mode Share") xtitle("Census Year") ///
+		legend(order(1 "Transit (White Commuters)" 2 "Transit (Black Commuters)" 	///
+					 3 "Walk/Other (White Commuters)" 4 "Walk/Other (Black Commuters)") rows(2) pos(6)) ///
+		yline(0, lc(black) lp(solid))
+		
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_nonauto.png", replace
+	
 restore
 
 
