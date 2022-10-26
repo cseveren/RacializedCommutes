@@ -14,6 +14,24 @@ keep if min_popemp>=1000
 keep if n_yrs==5
 * leaves 1690 obs for 338 CZs *
 
+preserve
+	keep if year==1980 | year==2019
+	keep czone year largestcity pop1990 min_popemp perc_black r6_estimate
+
+	reshape wide perc_black r6_estimate, i(czone) j(year)
+	order largestcity czone pop1990 min_popemp perc_black2019 perc_black1980 r6_estimate2019 r6_estimate1980, first
+	gsort -pop1990
+	
+	keep if min_popemp>=200000
+	gen r6_diff = r6_estimate2019 - r6_estimate1980
+	
+	gsort -r6_estimate2019
+	
+	egen rank2019 = rank(r6_estimate2019), track
+	egen rank1980 = rank(r6_estimate1980), track
+	egen rankdiff = rank(r6_diff), track
+restore
+
 
 est clear
 
@@ -100,10 +118,23 @@ local explvar
 foreach v of varlist ma_ratio_citysp diss tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
 	eststo, title("`v'"): reghdfe	r6_estimate `v' if bigger==1 [aw=popemp_black], a(czone year) vce(cluster czone)
 	local explvar `explvar' `v' var
+	
+	capture sum `v' if bigger==1 & year==1980 [aw=popemp_black]
+	capture estadd scalar mn1980 = `r(mean)'
+	capture sum `v' if bigger==1 & year==1990 [aw=popemp_black]
+	capture estadd scalar mn1990 = `r(mean)'
+	capture sum `v' if bigger==1 & year==2000 [aw=popemp_black]
+	capture estadd scalar mn2000 = `r(mean)'
+	capture sum `v' if bigger==1 & year==2010 [aw=popemp_black]
+	capture estadd scalar mn2010 = `r(mean)'
+	capture sum `v' if bigger==1 & year==2019 [aw=popemp_black]
+	capture estadd scalar mn2019 = `r(mean)'
+
 }
 
 esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6_nocontrol.tex", ///
-	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace bookt f r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
+	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace bookt starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend ///
+	stats(mn1980 mn1990 mn2000 mn2010 mn2019 r2 N, fmt(%9.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.0g))
 esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6_nocontrol.csv", ///
 	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace csv r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
 est clear
