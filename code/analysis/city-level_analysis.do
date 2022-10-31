@@ -30,6 +30,19 @@ preserve
 	egen rank2019 = rank(r6_estimate2019), track
 	egen rank1980 = rank(r6_estimate1980), track
 	egen rankdiff = rank(r6_diff), track
+	
+	keep largestcity czone r6_estimate2019 rank2019 r6_estimate1980 rank1980 r6_diff rankdiff
+	order largestcity czone r6_estimate2019 rank2019 r6_estimate1980 rank1980 r6_diff rankdiff, first
+	format r6_estimate2019 r6_estimate1980 r6_diff %9.3f
+	
+	tostring r6_estimate2019, replace format(%4.3f) force
+	tostring r6_estimate1980, replace format(%4.3f) force
+	tostring r6_diff, replace format(%4.3f) force
+	
+	texsave using "${DGIT}/results/${SAMPLE}/tables/orderedlist_rrd.tex", replace
+	*dataout, save("${DGIT}/results/${SAMPLE}/tables/orderedlist_rrd.tex") tex
+	*tabstat czone r6_estimate2019 rank2019 r6_estimate1980 rank1980 r6_diff rankdiff, by(largestcity)
+	
 restore
 
 
@@ -76,24 +89,27 @@ est clear
 ** Summary of RDD, Part I
 
 estpost tabstat r6_estimate [aw=popemp_black], by(year) stat(count mean sd min max) nototal
-
-estpost tabstat r6_estimate [aw=n_black], by(year) stat(count mean sd min max) nototal
-esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_summaryweights.tex", ///
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_summaryweights_all.tex", ///
 	booktabs cells("count mean(fmt(3)) sd(fmt(3)) min(fmt(3)) max(fmt(3))") replace
-
 est clear
-estpost tabstat r6_estimate, by(year) stat(count mean sd min max) nototal
-esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_summarynoweights.tex", ///
-	booktabs cells("count mean(fmt(3)) sd(fmt(3)) min(fmt(3)) max(fmt(3))") replace
 
+estpost tabstat r6_estimate if bigger==1 [aw=popemp_black], by(year) stat(count mean sd min max) nototal
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_summaryweights_big.tex", ///
+	booktabs cells("count mean(fmt(3)) sd(fmt(3)) min(fmt(3)) max(fmt(3))") replace
+est clear
+
+estpost tabstat r6_estimate if bigger!=1 [aw=popemp_black], by(year) stat(count mean sd min max) nototal
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_summaryweights_small.tex", ///
+	booktabs cells("count mean(fmt(3)) sd(fmt(3)) min(fmt(3)) max(fmt(3))") replace
 est clear
 
 ** Summary of RDD, Part II
-estpost tabstat popemp perc_black ma_ratio_citysp ma_ratio_common_wwage diss gini_blk gini_wht tot_centrality_OG len_ab modeshare_anytransit time_car valueh comm_hval_corr_est [aw=n_black], stat(count mean sd min max) col(stat)
+/*
+estpost tabstat popemp perc_black ma_ratio_citysp diss gini_blk gini_wht tot_centrality_OG len_ab modeshare_anytransit time_car valueh comm_hval_corr_est [aw=popemp_black], stat(count mean sd min max) col(stat)
 esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_summaryurbanform.tex", ///
 	booktabs cells("count mean(fmt(3)) sd(fmt(3)) min(fmt(3)) max(fmt(3))") replace
 est clear
-
+*/
 *************
 ** Population and Racial Composition
 foreach y of numlist 1980 2019 {
