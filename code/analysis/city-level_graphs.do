@@ -13,12 +13,15 @@ set scheme plotplainblind
 
 ** Motivation for city size restriction
 preserve 
+	
+	*local popvar min_popemp
+	local popvar popemp
 	gen popcat = .
-	replace popcat = 3 if inrange(min_popemp, 0, 100000)
-	replace popcat = 4 if inrange(min_popemp, 100001, 200000)
-	replace popcat = 5 if inrange(min_popemp, 200001, 500000)
-	replace popcat = 6 if inrange(min_popemp, 500001, 1000000)
-	replace popcat = 7 if inrange(min_popemp, 1000001, 100000000)
+	replace popcat = 3 if inrange(`popvar', 0, 100000)
+	replace popcat = 4 if inrange(`popvar', 100001, 200000)
+	replace popcat = 5 if inrange(`popvar', 200001, 500000)
+	replace popcat = 6 if inrange(`popvar', 500001, 1000000)
+	replace popcat = 7 if inrange(`popvar', 1000001, 100000000)
 
 
 	collapse (mean) r6_estimate [aw=popemp_black], by(popcat year)
@@ -29,7 +32,7 @@ preserve
 			(line r6_estimate year if popcat==6, lc(blue) lp(solid)) || ///
 			(line r6_estimate year if popcat==7, lc(navy) lp(solid)), ///
 			yline(0, lc(black) lp(dot)) ylabel(, nogrid) xlabel(, nogrid) ///
-			legend(off) ytitle("Mean Residual Difference (RRD)," "by Minimum Employed Population") xtitle("Year") ///
+			legend(off) ytitle("Mean Residual Difference (RRD)," "by Employed Population") xtitle("Year") ///
 			text(-0.011 2005 "<100k", si(medsmall) c(gs11)) ///
 			text(-0.009 2016 "[100k,200k]", si(medsmall) c(ltblue)) ///
 			text(0.0357 1983.5 "(200k, 500k]", si(medsmall) c(midblue)) ///
