@@ -129,7 +129,7 @@ esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table5.csv", ///
 est clear
 
 *************
-** Correlates of RRD
+** Correlates of RRD, big cities
 local explvar
 foreach v of varlist ma_ratio_citysp diss tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
 	eststo, title("`v'"): reghdfe	r6_estimate `v' if bigger==1 [aw=popemp_black], a(czone year) vce(cluster czone)
@@ -164,6 +164,45 @@ foreach v of varlist ma_ratio_citysp diss tot_centrality_OG lmiles_ab modeshare_
 esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6_wcontrol.tex", ///
 	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace bookt f r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
 esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6_wcontrol.csv", ///
+	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace csv r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
+est clear
+
+*************
+** Correlates of RRD, all cities
+local explvar
+foreach v of varlist ma_ratio_citysp diss tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
+	eststo, title("`v'"): reghdfe	r6_estimate `v' [aw=popemp_black], a(czone year) vce(cluster czone)
+	local explvar `explvar' `v' var
+	
+	capture sum `v' if year==1980 [aw=popemp_black]
+	capture estadd scalar mn1980 = `r(mean)'
+	capture sum `v' if year==1990 [aw=popemp_black]
+	capture estadd scalar mn1990 = `r(mean)'
+	capture sum `v' if year==2000 [aw=popemp_black]
+	capture estadd scalar mn2000 = `r(mean)'
+	capture sum `v' if year==2010 [aw=popemp_black]
+	capture estadd scalar mn2010 = `r(mean)'
+	capture sum `v' if year==2019 [aw=popemp_black]
+	capture estadd scalar mn2019 = `r(mean)'
+
+}
+
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6all_nocontrol.tex", ///
+	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace bookt starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend ///
+	stats(mn1980 mn1990 mn2000 mn2010 mn2019 r2 N, fmt(%9.4f %9.4f %9.4f %9.4f %9.4f %9.4f %9.0g))
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6all_nocontrol.csv", ///
+	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace csv r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
+est clear
+
+local explvar
+foreach v of varlist ma_ratio_citysp diss tot_centrality_OG lmiles_ab modeshare_anytransit time_car lhval comm_hval_corr_est {
+	eststo, title("`v'"): reghdfe	r6_estimate `v' lpop [aw=popemp_black], a(czone year) vce(cluster czone)
+	local explvar `explvar' `v' var
+}
+
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6all_wcontrol.tex", ///
+	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace bookt f r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
+esttab using "${DGIT}/results/${SAMPLE}/tables/citylevel_table6all_wcontrol.csv", ///
 	rename(`explvar') b(4) se(4) nocon mlabels(,titles) replace csv r2(3) starlevels(+ 0.10 * 0.05 ** 0.01 *** 0.001) legend
 est clear
 
