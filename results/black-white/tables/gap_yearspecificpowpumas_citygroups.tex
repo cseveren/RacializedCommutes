@@ -1,0 +1,48 @@
+
+\begingroup
+\centering
+\begin{tabular}{lccccccccccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{13}{c}{ln\_trantime}\\
+   Model:                                  & (1)           & (2)           & (3)           & (4)          & (5)           & (6)           & (7)           & (8)          & (9)           & (10)          & (11)                  & (12)          & (13)\\  
+   \midrule
+   \emph{Variables}\\
+   $1[\text{Black}] \times t_{2000}$       & 0.084$^{***}$ & 0.084$^{***}$ & 0.068$^{***}$ & 0.015$^{*}$  & 0.143$^{***}$ & 0.069$^{***}$ & 0.065$^{***}$ & 0.053        & 0.190$^{***}$ & 0.046$^{***}$ & 0.039$^{***}$         & 0.057$^{***}$ & 0.269$^{***}$\\   
+                                           & (0.008)       & (0.009)       & (0.019)       & (0.007)      & (0.021)       & (0.011)       & (0.011)       & (0.034)      & (0.032)       & (0.004)       & (0.004)               & (0.014)       & (0.014)\\   
+   $1[\text{Black}] \times t_{2005--11}$   & 0.063$^{***}$ & 0.058$^{***}$ & 0.068$^{***}$ & 0.024$^{*}$  & 0.132$^{***}$ & 0.051$^{***}$ & 0.050$^{***}$ & 0.055$^{**}$ & 0.158$^{***}$ & 0.025$^{***}$ & 0.019$^{***}$         & 0.064$^{***}$ & 0.190$^{***}$\\   
+                                           & (0.006)       & (0.006)       & (0.009)       & (0.010)      & (0.017)       & (0.012)       & (0.012)       & (0.020)      & (0.042)       & (0.003)       & (0.004)               & (0.010)       & (0.011)\\   
+   $1[\text{Black}] \times t_{2012--19}$   & 0.058$^{***}$ & 0.052$^{***}$ & 0.062$^{***}$ & 0.029$^{**}$ & 0.082$^{***}$ & 0.035$^{***}$ & 0.030$^{***}$ & 0.046$^{*}$  & 0.141$^{***}$ & 0.017$^{***}$ & 0.010$^{***}$         & 0.068$^{***}$ & 0.147$^{***}$\\   
+                                           & (0.007)       & (0.007)       & (0.010)       & (0.009)      & (0.018)       & (0.005)       & (0.006)       & (0.021)      & (0.031)       & (0.003)       & (0.003)               & (0.009)       & (0.011)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   puma\_yrbncz-pwpuma\_yr                 & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   year\_bin-educ\_bin                     & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   year\_bin                               & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   year\_bin-tranwork\_bin                 & Yes           &               &               &              &               & Yes           &               &              &               & Yes           &                       &               & \\  
+   ind1990-year\_bin                       & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   occ1990-year\_bin                       & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   \midrule
+   \emph{Varying Slopes}\\
+   female (year\_bin)                      & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   age (year\_bin)                         & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   age2 (year\_bin)                        & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   d\_marr (year\_bin)                     & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   d\_head (year\_bin)                     & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   child\_1or2 (year\_bin)                 & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   child\_gteq3 (year\_bin)                & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   linc (year\_bin)                        & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   inczero (year\_bin)                     & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes           & Yes          & Yes           & Yes           & Yes                   & Yes           & Yes\\  
+   d\_gq (year\_bin)                       & Yes           & Yes           & Yes           & Yes          &               & Yes           & Yes           & Yes          &               & Yes           & Yes                   & Yes           & Yes\\  
+   d\_vehinhh (year\_bin)                  & Yes           & Yes           & Yes           & Yes          &               & Yes           & Yes           & Yes          &               & Yes           & Yes                   & Yes           & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                            & 4,675,736     & 3,842,451     & 209,601       & 286,151      & 168,261       & 2,602,007     & 2,441,245     & 65,046       & 53,080        & 29,494,524    & 27,959,105            & 244,308       & 905,279\\  
+   R$^2$                                   & 0.39133       & 0.32364       & 0.25908       & 0.36990      & 0.25196       & 0.27758       & 0.24496       & 0.22319      & 0.31038       & 0.30622       & 0.27892               & 0.28893       & 0.29366\\  
+   Within R$^2$                            & 0.00109       & 0.00092       & 0.00173       & 0.00043      & 0.00203       & 0.00056       & 0.00050       & 0.00098      & 0.00306       & 0.00014       & $9.58\times 10^{-5}$  & 0.00122       & 0.00419\\  
+   \midrule \midrule
+   \multicolumn{14}{l}{\emph{Clustered (czone) standard-errors in parentheses}}\\
+   \multicolumn{14}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+
