@@ -64,8 +64,43 @@ restore
 
 ************************************
 *--By travel mode 
+
 preserve
 
+	g byte modeshare_car = (tranwork_bin==10)
+	g byte modeshare_bus = (tranwork_bin==30)
+	g byte modeshare_subway = (tranwork_bin==36)
+	g byte modeshare_railroad = (tranwork_bin==37)
+	g byte modeshare_bicycle = (tranwork_bin==50)
+	g byte modeshare_walked = (tranwork_bin==60)
+	g byte modeshare_other = (tranwork_bin==70)
+
+	gcollapse (mean) modeshare_* [aw=czwt_tt], by(year_bin d_black) 	
+	
+	reshape long modeshare_, i(year_bin d_black) j(mode) string
+	rename modeshare_ modeshare
+	gen tranwork = .
+	replace tranwork=10 if mode=="car"
+	replace tranwork=30 if mode=="bus"
+	replace tranwork=36 if mode=="subway"
+	replace tranwork=37 if mode=="railroad"
+	replace tranwork=50 if mode=="bicycle"
+	replace tranwork=60 if mode=="walked"
+	replace tranwork=70 if mode=="other"
+	
+	save "${DATA}/empirics/output/modeshare_1980_2019_forspike.dta", replace // for use in next preserve block
+restore
+	
+preserve
+
+	g byte modeshare_car = (tranwork_bin==10)
+	g byte modeshare_bus = (tranwork_bin==30)
+	g byte modeshare_subway = (tranwork_bin==36)
+	g byte modeshare_railroad = (tranwork_bin==37)
+	g byte modeshare_bicycle = (tranwork_bin==50)
+	g byte modeshare_walked = (tranwork_bin==60)
+	g byte modeshare_other = (tranwork_bin==70)
+	
 	collapse (mean) trantime [aw=czwt_tt], by(year_bin d_black tranwork) 	
 	
 	lab def tranwork_alt 10 "Private Autos" 30 "Bus/Streetcar" ///
@@ -83,6 +118,38 @@ preserve
 		by(tranwork, row(1) noixtick noiytick note(""))
 	
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/trantime_bymodes_spike.png", replace	
+	
+	rename tranwork_bin tranwork
+	merge 1:1 year_bin d_black tranwork using "${DATA}/empirics/output/modeshare_1980_2019_forspike.dta"
+	drop _merge
+	
+	replace modeshare = modeshare*100
+	
+	drop if inlist(tranwork, 37, 50, 70)
+		
+	/*twoway (line trantime year_bin if d_black==0, lstyle(solid) lcolor(blue) yaxis(1 2)) || ///
+		(line trantime year_bin if d_black==1, lpattern(dash) lcolor(red) yaxis(1 2)) || ///
+		(line modeshare year_bin if d_black==0, lstyle(solid) lcolor(black) yaxis(1 2)) || ///
+		(line modeshare year_bin if d_black==1, lpattern(dash) lcolor(gray) yaxis(1 2)), ///
+		xlabel(1980 "1980" 2019 "2019") xtitle("") ///
+		ytitle("Commute Time (Minutes)") ylabel(0 "0%" 100 "100%", axis(2)) ///
+		legend(pos(6) row(1) label(1 "White") label(2 "Black")) ///
+		subtitle(, pos(6)) ///
+		by(tranwork, row(1) noixtick noiytick note("") r1title("Share Using Mode (%)")) */
+		
+	twoway (line trantime year_bin if d_black==0, lstyle(solid) lcolor(blue) yaxis(1 2)) || ///
+		(line trantime year_bin if d_black==1, lpattern(dash) lcolor(red) yaxis(1 2)) || ///
+		(scatter modeshare year_bin if d_black==0, c(l) mcolor(black%60) lstyle(solid) lcolor(black%60) yaxis(1 2)) || ///
+		(scatter modeshare year_bin if d_black==1, c(l) mcolor(gray%60) lpattern(dash) lcolor(gray%60) yaxis(1 2)), ///
+		xlabel(1980 "1980" 2019 "2019") xtitle("") ///
+		ytitle("Average Commute Time                   " "(Minutes)                    ") ///
+		ylabel(0(20)60, axis(1)) ylabel(0 "0%" 100 "100%", axis(2)) ///
+		legend(pos(6) row(2) order (1 3 2 4) label(1 "Time: White") label(2 "Time: Black") label(3 "Share: White")  label(4 "Share: Black")) ///
+		subtitle(, pos(6)) ///
+		ymla(50 "Commute Mode Share (%)", axis(2) labsize(*2) ang(270) labgap(7) labcolor(gray)) ///
+		by(tranwork, row(1) noixtick noiytick note("")) ysize(7) xsize(9)
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/trantime_bymodes_spikenew.png", replace	
+	
 	/*
 	keep if year_bin==1980 | year_bin==2019
 	
@@ -161,6 +228,7 @@ preserve
 
 	collapse (mean) modeshare_* [aw=czwt_tt], by(year d_black) 	 	
 		
+	save "${DATA}/empirics/output/modeshare_1980_2019.dta", replace // for use in philly commuting gap project
 	append using "${DATA}/empirics/output/modeshare_1960_1970.dta"
 	
 	sort year d_black
@@ -530,6 +598,21 @@ twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 				 8 "CZ + demo + cargq + mode + work") rows(2) pos(6) subtitle("Controls:     ", pos(9)))	 
 graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_simpler.png", replace
 
+twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
+	(scatter beta_race_1 year, connect(l) m(i) lstyle(solid) lcolor(black))  ///
+	(rcap upper_race_2 lower_race_2 year , lstyle(ci) lcolor(red%30)) ///
+	(scatter beta_race_2 year, connect(l) m(i) lpattern(dash) lcolor(red))  ///
+	(rcap upper_race_4 lower_race_4 year , lstyle(ci) lcolor(gold%30)) ///
+	(scatter beta_race_4 year, connect(l) m(o) mc(gold) lpattern(solid) lcolor(gold)) ///
+	(rcap upper_race_6 lower_race_6 year , lstyle(ci) lcolor(blue%30)) ///
+	(scatter beta_race_6 year, connect(l) m(dh) mc(blue) lpattern(solid) lcolor(blue)),  ///
+	ytitle("Racialized Difference") xtitle("Census Year") ylabel(0[0.05]0.3, nogrid) xlabel(,nogrid) yline(0, lc(gray) lp(dot)) ///
+	legend(order(2 "Controls: None" 	///
+				 4 "Controls: CZ"	/// 
+				 6 "Controls: CZ, Demog/Educ"  ///
+				 8 "Controls: CZ, Demog/Educ, Car in HH/Group Quarters, Commute Mode, Work/Income") rows(4) pos(6))	 
+graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_simpler_newlegend.png", replace
+
 frame change default
 frame drop regvalues
 
@@ -669,6 +752,7 @@ foreach mm in 10 30 36 37 50 60 70 99 {
 	}
 	if `mm' == 99 {
 		local mode = "transit"
+		local add = " Transit Mode,"
 	}
 
 	use "${DATA}/empirics/data/temp_dta/${SAMPLE}/conditional_data_`mode'.dta", clear
@@ -712,6 +796,18 @@ foreach mm in 10 30 36 37 50 60 70 99 {
 					 4 "CZ"	/// 
 					 6 "CZ + demo + cargq + work") rows(1) pos(6) subtitle("Controls:   ", pos(9)))	 
 	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'_simpler.png", replace
+	
+	twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
+		(scatter beta_race_1 year, connect(l) m(i) lstyle(solid) lcolor(black))  ///
+		(rcap upper_race_2 lower_race_2 year , lstyle(ci) lcolor(red%30)) ///
+		(scatter beta_race_2 year, connect(l) m(i) lpattern(dash) lcolor(red))  ///
+		(rcap upper_race_6 lower_race_6 year , lstyle(ci) lcolor(blue%30)) ///
+		(scatter beta_race_6 year, connect(l) m(dh) mc(blue) lpattern(solid) lcolor(blue)),  ///
+		ytitle("Racialized Difference") xtitle("Census Year") ylabel(, nogrid) xlabel(,nogrid) yline(0, lc(gray) lp(dot)) /// ///
+		legend(order(2 "Controls: None" 	///
+				 4 "Controls: CZ"	/// 
+				 6 "Controls: CZ, Demog/Educ, Car in HH/Group Quarters,`add' Work/Income") rows(3) pos(6))	 
+	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'_simpler_newlegend.png", replace
 
 	clear
 }
