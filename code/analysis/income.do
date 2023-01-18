@@ -118,9 +118,9 @@ twoway (rcap upper_1 lower_1 vigntile, lstyle(ci) lcolor(black%80)) ///
 	ytitle("Racialized Difference") xtitle("Income Centile (20 bins)") ylabel(0[0.1]0.4, nogrid) ///
 	xlabel(0(10)100,nogrid) yline(0, lc(gray) lp(dot)) ///
 	legend(order(2 "1980 - Controls: CZ" 	///
-				 6 "1980 - Controls: CZ + demo + cargq + mode + work"  ///
+				 6 "1980 - Controls: Demog/Educ, Car in HH/Group Quarters, Commute Mode, Work/Income"  ///
 				 4 "2019 - Controls: CZ"	/// 
-				 8 "2019 - Controls: CZ + demo + cargq + mode + work") rows(2) pos(6)) 
+				 8 "2019 - Controls: Demog/Educ, Car in HH/Group Quarters, Commute Mode, Work/Income") rows(4) pos(6)) 
 graph export "${DGIT}/results/${SAMPLE}/plots/income_all.png", replace
 
 clear frames
