@@ -129,6 +129,7 @@ twoway (line est_nopuma year) || ///
 		ysize(6.5) xsize(5.5)
 
 graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/bigcity_changesovertime.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/bigcity_changesovertime.eps", replace
 
 
 

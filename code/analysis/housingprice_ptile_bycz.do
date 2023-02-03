@@ -139,6 +139,7 @@ foreach hvar in housingcost valueh rentgrs {
 				 4 "2019 - Controls: CZ"	/// 
 				 8 "2019 - Controls: Demog/Educ, Car in HH/Group Quarters, Commute Mode, Work/Income") rows(4) pos(6)) 
 	graph export "${DGIT}/results/${SAMPLE}/plots/hous_`hvar'_bycz.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/hous_`hvar'_bycz.eps", replace
 }
 
 clear frames

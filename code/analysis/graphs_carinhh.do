@@ -20,4 +20,5 @@ twoway (line d_vehinhh year if d_black == 0, lstyle(solid) lcolor(orange))  ///
 	legend(order(1 "White (18+ with Auto in HH)" 2 "Black (18+ with Auto in HH)") rows(1) pos(6)) 
 		
 graph export "${DGIT}/results/${SAMPLE}/plots/share_carinhh.png", replace		
+graph export "${DGIT}/results/${SAMPLE}/plots/share_carinhh.eps", replace		
 			

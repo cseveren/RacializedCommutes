@@ -122,5 +122,6 @@ twoway (rcap upper_1 lower_1 vigntile, lstyle(ci) lcolor(black%80)) ///
 				 4 "2019 - Controls: CZ"	/// 
 				 8 "2019 - Controls: Demog/Educ, Car in HH/Group Quarters, Commute Mode, Work/Income") rows(4) pos(6)) 
 graph export "${DGIT}/results/${SAMPLE}/plots/income_all.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/income_all.eps", replace
 
 clear frames

@@ -40,6 +40,7 @@ preserve
 			text(0.124 2011 ">1 mil.", si(medsmall) c(navy))
 
 	graph export "${DGIT}/results/${SAMPLE}/plots/rrd_by_population.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/rrd_by_population.eps", replace
 restore 
 	
 	
@@ -47,18 +48,6 @@ foreach n of numlist 6 {
 	
 	gen L4_r`n'_estimate = L4.r`n'_estimate
 	
-	if `n'==2 {
-		local nlab "Covars: None"
-	}
-	else if `n'==3 {
-		local nlab "Covars: Demog"
-	}
-	else if `n'==4 {
-		local nlab "Covars: Mode"
-	}
-	else if `n'==5 {
-		local nlab "Covars: Demog + Mode"
-	}
 	else if `n'==6 {
 		local nlab "Covars: Demog + Mode + Work"
 	}
@@ -77,152 +66,8 @@ foreach n of numlist 6 {
 		text(0.3 -0.25 "Slope: `coef'" "Standard Error: `se'", j(right) si(medsmall) c(dkorange))
 		
 	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/persistance_`n'.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/persistance_`n'.eps", replace
 	
-	
-	twoway (scatter r`n'_estimate lpop if year==1980, m(o) mc(black) ) || ///
-		(lpoly r`n'_estimate lpop if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
-		(scatter r`n'_estimate lpop if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate lpop if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1980" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Log(Population)") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
-		
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/popchange_`n'.png", replace	
-	
-	twoway (scatter r`n'_estimate perc_black if year==1980, m(o) mc(black) ) || ///
-		(lpoly r`n'_estimate perc_black if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
-		(scatter r`n'_estimate perc_black if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate perc_black if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1980" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Percent Black") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
-
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/percblack_`n'.png", replace	
-	
-	twoway (scatter r`n'_estimate diss if year==1980, m(o) mc(black) ) || ///
-		(lpoly r`n'_estimate diss if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
-		(scatter r`n'_estimate diss if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate diss if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1980" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Residential Segregation (Dissimilarity)") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
-		
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/segdiss_`n'.png", replace
-	
-	
-	twoway (scatter r`n'_estimate gini_blk if year==1990, m(o) mc(gray) ) || ///
-		(lpoly r`n'_estimate gini_blk if year==1990 [aw=popemp_black], lc(gray) lp(solid)) || ///
-		(scatter r`n'_estimate gini_blk if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate gini_blk if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1990" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Employment Concentration (GINI) - Black Workers") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
-		
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/giniblk_`n'.png", replace
-	
-	twoway (scatter r`n'_estimate gini_wht if year==1990, m(o) mc(gray) ) || ///
-		(lpoly r`n'_estimate gini_wht if year==1990 [aw=popemp_black], lc(gray) lp(solid)) || ///
-		(scatter r`n'_estimate gini_wht if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate gini_wht if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1990" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Employment Concentration (GINI) - White Workers") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
-		
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/giniwht_`n'.png", replace
-	
-	twoway (scatter r`n'_estimate tot_centrality_OG if year==1980, m(o) mc(black) ) || ///
-		(lpoly r`n'_estimate tot_centrality_OG if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
-		(scatter r`n'_estimate tot_centrality_OG if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate tot_centrality_OG if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1980" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Centrality (Bento et al. '05)") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
-		
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/centrality_`n'.png", replace
-	
-	twoway (scatter r`n'_estimate lmiles_ab if year==1980, m(o) mc(black) ) || ///
-		(lpoly r`n'_estimate lmiles_ab if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
-		(scatter r`n'_estimate lmiles_ab if year==2000, m(dh) mc(green%80) ) || ///
-		(lpoly r`n'_estimate lmiles_ab if year==2000 [aw=popemp_black], lc(green%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1980" 3 "Difference in 2000")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Log(Highway Miles)") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
-		
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/highways_`n'.png", replace
-	
-	twoway (scatter r`n'_estimate modeshare_anytransit if year==1980, m(o) mc(black) ) || ///
-		(lpoly r`n'_estimate modeshare_anytransit if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
-		(scatter r`n'_estimate modeshare_anytransit if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate modeshare_anytransit if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1980" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Transit Mode Share") ytitle("Residual Difference") yscale(range(-0.5 0.5)) 
-	
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/transitshare_`n'.png", replace	
-	
-		
-	twoway (scatter r`n'_estimate time_car if year==1980, m(o) mc(black) ) || ///
-		(lpoly r`n'_estimate time_car if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
-		(scatter r`n'_estimate time_car if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate time_car if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1980" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Travel Time - Car") ytitle("Residual Difference") yscale(range(-0.5 0.5))
-	
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/traveltimecar_`n'.png", replace
-	
-	twoway (scatter r`n'_estimate comm_hval_corr_est if year==1980, m(o) mc(black) ) || ///
-		(lpoly r`n'_estimate comm_hval_corr_est if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
-		(scatter r`n'_estimate comm_hval_corr_est if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate comm_hval_corr_est if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1980" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Corr(Commute Time, Housing Price)") ytitle("Residual Difference") yscale(range(-0.5 0.5))
-		
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/commhvalcorr_`n'.png", replace
-	
-	twoway (scatter r`n'_estimate lhval if year==1980, m(o) mc(black) ) || ///
-		(lpoly r`n'_estimate lhval if year==1980 [aw=popemp_black], lc(black) lp(solid)) || ///
-		(scatter r`n'_estimate lhval if year==2019, m(dh) mc(blue%80) ) || ///
-		(lpoly r`n'_estimate lhval if year==2019 [aw=popemp_black], lc(blue%80) lp(dash)), ///
-		legend(pos(6) row(1) order(1 "Difference in 1980" 3 "Difference in 2012-19")) ///
-		yline(0, lc(gray) lp(dot)) ylabel(-0.5(0.5)0.5, nogrid) xlabel(,nogrid) ///
-		xtitle("Log(Average House Price)") ytitle("Residual Difference") yscale(range(-0.5 0.5))
-		
-	graph export "${DGIT}/results/${SAMPLE}/plots/citylevel/houseprice_`n'.png", replace
 	
 }
 	
-
-/*
-	
-gen citytype = 0
-
-replace citytype = 2 if (czone==19400 | /// NYC
-						czone==20500 | /// Boston 
-						czone==24300 | /// Chicago
-						czone==19700 | /// Philadelphia
-						czone==11304 | /// DC
-						czone==37800 | /// SF
-						czone==9100 | /// Atlanta
-						czone==38300) // LA
-
-replace citytype = 1 if (czone==33100 | /// DFW
-						czone==32000 | /// Houston
-						czone==7000 | /// Miami
-						czone==35001 | /// Phoenix
-						czone==39400 | /// Seattle
-						czone==11600 | /// Detroit
-						czone==38000 | /// San Diego
-						czone==21501) // Twin Cities
-
-collapse (mean) r6_estimate[aw=popemp_black], by(citytype year)
-
-**
-twoway (line r6_estimate year if citytype==0) || ///
-		(line r6_estimate year if citytype==1) || ///
-		(line r6_estimate year if citytype==2)
-
-twoway (lpoly r6_estimate lpop if year==2019 [aw=popemp_black], bw(0.5)) || ///
-		(scatter r6_estimate lpop if year==2019 & inrange(r6_estimate, -0.3, 0.3))
-*/

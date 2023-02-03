@@ -59,6 +59,7 @@ preserve
 // 			xtitle("Census Year") ytitle("Commute Time") name(rcap, replace)
 			
 		graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/`var'.png", replace	
+		graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/`var'.eps", replace	
 	}
 restore	 
 
@@ -109,6 +110,7 @@ preserve
 
 	lab val tranwork_bin tranwork_alt	
 	
+	/*
 	twoway (line trantime year_bin if d_black==0, lstyle(solid) lcolor(blue)) || ///
 		(line trantime year_bin if d_black==1, lpattern(dash) lcolor(red)), ///
 		xlabel(1980 "1980" 2019 "2019") xtitle("") ///
@@ -118,7 +120,7 @@ preserve
 		by(tranwork, row(1) noixtick noiytick note(""))
 	
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/trantime_bymodes_spike.png", replace	
-	
+	*/
 	rename tranwork_bin tranwork
 	merge 1:1 year_bin d_black tranwork using "${DATA}/empirics/output/modeshare_1980_2019_forspike.dta"
 	drop _merge
@@ -126,16 +128,6 @@ preserve
 	replace modeshare = modeshare*100
 	
 	drop if inlist(tranwork, 37, 50, 70)
-		
-	/*twoway (line trantime year_bin if d_black==0, lstyle(solid) lcolor(blue) yaxis(1 2)) || ///
-		(line trantime year_bin if d_black==1, lpattern(dash) lcolor(red) yaxis(1 2)) || ///
-		(line modeshare year_bin if d_black==0, lstyle(solid) lcolor(black) yaxis(1 2)) || ///
-		(line modeshare year_bin if d_black==1, lpattern(dash) lcolor(gray) yaxis(1 2)), ///
-		xlabel(1980 "1980" 2019 "2019") xtitle("") ///
-		ytitle("Commute Time (Minutes)") ylabel(0 "0%" 100 "100%", axis(2)) ///
-		legend(pos(6) row(1) label(1 "White") label(2 "Black")) ///
-		subtitle(, pos(6)) ///
-		by(tranwork, row(1) noixtick noiytick note("") r1title("Share Using Mode (%)")) */
 		
 	twoway (line trantime year_bin if d_black==0, lstyle(solid) lcolor(blue) yaxis(1 2)) || ///
 		(line trantime year_bin if d_black==1, lpattern(dash) lcolor(red) yaxis(1 2)) || ///
@@ -149,64 +141,8 @@ preserve
 		ymla(50 "Commute Mode Share (%)", axis(2) labsize(*2) ang(270) labgap(7) labcolor(gray)) ///
 		by(tranwork, row(1) noixtick noiytick note("")) ysize(7) xsize(9)
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/trantime_bymodes_spikenew.png", replace	
-	
-	/*
-	keep if year_bin==1980 | year_bin==2019
-	
-	graph bar trantime, vertical over(d_black) over(year_bin) over(tranwork_bin) ///
-		legend(label(1 "White commuters") label(2 "Black commuters") rows(1) pos(6))
-	
-	reshape wide trantime, i(d_black tranwork) j(year_bin)
-	gen early = 1980
-	gen late = 2019
-	
-	twoway (pcspike trantime1980 early trantime2019 late if d_black==0) || ///
-		(pcspike trantime1980 early trantime2019 late if d_black==1), ///
-		xlabel(1980 "1980" 2019 "2019") ///
-		by(tranwork, row(1) noixtick legend(off) note(""))
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/trantime_bymodes_spikenew.eps", replace	
 
-	twoway (line trantime year if tranwork == 10 & d_black == 0, lstyle(solid) lcolor(orange))  ///
-		(line trantime year if tranwork == 10 & d_black == 1, lpattern(dash) lcolor(orange))  ///
-		(line trantime year if tranwork == 30 & d_black == 0, lstyle(solid) lcolor(cyan))  ///
-		(line trantime year if tranwork == 30 & d_black == 1, lpattern(dash) lcolor(cyan))  ///
-		(line trantime year if tranwork == 36 & d_black == 0, lstyle(solid) lcolor(purple))  ///
-		(line trantime year if tranwork == 36 & d_black == 1, lpattern(dash) lcolor(purple))  ///
-		(line trantime year if tranwork == 37 & d_black == 0, lstyle(solid) lcolor(yellow))  ///
-		(line trantime year if tranwork == 37 & d_black == 1, lpattern(dash) lcolor(yellow))  ///
-		(line trantime year if tranwork == 50 & d_black == 0, lstyle(solid) lcolor(blue))  ///
-		(line trantime year if tranwork == 50 & d_black == 1, lpattern(dash) lcolor(blue))  ///
-		(line trantime year if tranwork == 60 & d_black == 0, lstyle(solid) lcolor(pink))  ///
-		(line trantime year if tranwork == 60 & d_black == 1, lpattern(dash) lcolor(pink))  ///
-		(line trantime year if tranwork == 70 & d_black == 0, lstyle(solid) lcolor(green))  ///
-		(line trantime year if tranwork == 70 & d_black == 1, lpattern(dash) lcolor(green)),  ///
-		ylabel(0[20]80) ytitle("Commute Time") xtitle("Census Year") ///
-		legend(order(1 "Private Motor Vehicle" 3 "Bus or Streetcar" 	///
-					 5 "Subway or Elevated" 7 "Railroad" 9 "Bicycle"    ///
-					 11 "Walked Only" 13 "Other") rows(2) pos(6))
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/unconditional/trantime_bymodes.png", replace
-	
-	* This way does line charts, but hard to see	
-	collapse (mean) trantime [aw=czwt_tt], by(year d_black tranwork) 	 
-
-	twoway (line trantime year if tranwork == 10 & d_black == 0, lstyle(solid) lcolor(orange))  ///
-		(line trantime year if tranwork == 10 & d_black == 1, lpattern(dash) lcolor(orange))  ///
-		(line trantime year if tranwork == 30 & d_black == 0, lstyle(solid) lcolor(cyan))  ///
-		(line trantime year if tranwork == 30 & d_black == 1, lpattern(dash) lcolor(cyan))  ///
-		(line trantime year if tranwork == 36 & d_black == 0, lstyle(solid) lcolor(purple))  ///
-		(line trantime year if tranwork == 36 & d_black == 1, lpattern(dash) lcolor(purple))  ///
-		(line trantime year if tranwork == 37 & d_black == 0, lstyle(solid) lcolor(yellow))  ///
-		(line trantime year if tranwork == 37 & d_black == 1, lpattern(dash) lcolor(yellow))  ///
-		(line trantime year if tranwork == 50 & d_black == 0, lstyle(solid) lcolor(blue))  ///
-		(line trantime year if tranwork == 50 & d_black == 1, lpattern(dash) lcolor(blue))  ///
-		(line trantime year if tranwork == 60 & d_black == 0, lstyle(solid) lcolor(pink))  ///
-		(line trantime year if tranwork == 60 & d_black == 1, lpattern(dash) lcolor(pink))  ///
-		(line trantime year if tranwork == 70 & d_black == 0, lstyle(solid) lcolor(green))  ///
-		(line trantime year if tranwork == 70 & d_black == 1, lpattern(dash) lcolor(green)),  ///
-		ylabel(0[20]80) ytitle("Commute Time") xtitle("Census Year") ///
-		legend(order(1 "Private Motor Vehicle" 3 "Bus or Streetcar" 	///
-					 5 "Subway or Elevated" 7 "Railroad" 9 "Bicycle"    ///
-					 11 "Walked Only" 13 "Other") rows(2) pos(6))
-	graph export "${ROOT}/empirics/results/${SAMPLE}/plots/unconditional/trantime_bymodes.png", replace		*/
 restore
 
 ************************************
@@ -241,7 +177,8 @@ preserve
 		yline(1, lc(black) lp(solid))
 		
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_auto.png", replace		
-			
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_auto.eps", replace	
+		
 	twoway (line modeshare_bus year if d_black == 0, lstyle(solid) lcolor(blue))  ///
 		(line modeshare_bus year if d_black == 1, lpattern(dash) lcolor(blue))  ///
 		(line modeshare_subway year if d_black == 0, lstyle(solid) lcolor(magenta))  ///
@@ -253,7 +190,8 @@ preserve
 					 3 "Subway or Elevated" 5 "Railroad") rows(1) pos(6)) ///
 		yline(0, lc(black) lp(solid))			 
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_transits.png", replace					 
-
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_transits.eps", replace
+	
 	twoway (line modeshare_bicycle year if d_black == 0, lstyle(solid) lcolor(cyan))  ///
 		(line modeshare_bicycle year if d_black == 1, lpattern(dash) lcolor(cyan))  ///
 		(line modeshare_walked year if d_black == 0, lstyle(solid) lcolor(pink))  ///
@@ -265,7 +203,7 @@ preserve
 					 3 "Walked Only" 5 "Other") rows(1) pos(6))	///
 		yline(0, lc(black) lp(solid))
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_bikewalkother.png", replace				 
-	
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_bikewalkother.eps", replace	
 				
 	twoway (line modeshare_anytransit year if d_black == 0, lstyle(solid) lcolor(cyan))  ///
 		(line modeshare_anytransit year if d_black == 1, lpattern(dash) lcolor(cyan))  ///
@@ -277,63 +215,17 @@ preserve
 		yline(0, lc(black) lp(solid))
 		
 	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_nonauto.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/modeshare_nonauto.eps", replace
 	
 restore
 
 
-************************************
-*--By gender
-preserve
-	foreach var in trantime ln_trantime {
-		gen se_`var' = `var'
-	}
-	collapse (mean) trantime ln_trantime (semean) se_trantime se_ln_trantime [aw=czwt_tt], by(year d_black sex) 
 
-	twoway (line trantime year if sex == 0 & d_black == 0, lstyle(solid) lcolor(blue))  ///
-		(line trantime year if sex == 0 & d_black == 1, lpattern(dash) lcolor(blue))  ///
-		(line trantime year if sex == 1 & d_black == 0, lstyle(solid) lcolor(red))  ///
-		(line trantime year if sex == 1 & d_black == 1, lpattern(dash) lcolor(red)),  ///
-		ytitle("Commute Time") xtitle("Census Year") ///
-		legend(order(1 "White, Male" 2 "Black, Male"	///
-					 3 "White, Female" 4 "Black, Female") rows(1) pos(6))
-		graph export "${DGIT}/results/${SAMPLE}/plots/unconditional/trantime_bygender.png", replace	
-
-restore
 
 
 /*------------------------------------------------------------------------------
 	Distributions / histograms, using binwidth 5
 ------------------------------------------------------------------------------*/
-************************************
-*--Kdensity
-sum trantime, d
-
-!mkdir "${DGIT}/results/${SAMPLE}/plots/distributions/"
-
-kdensity trantime [aw=czwt_tt], bwidth(5) ytitle("Density") xtitle("Commute Time")
-graph export "${DGIT}/results/${SAMPLE}/plots/distributions/kdensity_all_bw5.png", replace
-
-kdensity trantime [aw=czwt_tt], bwidth(2.5) ytitle("Density") xtitle("Commute Time")
-graph export "${DGIT}/results/${SAMPLE}/plots/distributions/kdensity_all_bw25.png", replace
-
-twoway (kdensity trantime [aw=czwt_tt] if d_black == 0, bwidth(5) lcolor(blue)) ///
-		(kdensity trantime [aw=czwt_tt] if d_black == 1, bwidth(5) lcolor(red)), ///
-		legend(order(1 "White" 2 "Black")) xtitle("Commute Time") ytitle("Density") note("")
-graph export "${DGIT}/results/${SAMPLE}/plots/distributions/kdensity_byrace_bw5.png", replace
-
-
-local years_list 1980 1990 2000 2010 2019
-
-foreach y of local years_list {
-
-	twoway (kdensity trantime [aw=czwt_tt] if year_bin == `y' & d_black == 0, width(5) color(blue)) ///
-		(kdensity trantime [aw=czwt_tt] if year_bin == `y' & d_black == 1, width(5) fcolor(none) lcolor(red)), ///
-		legend(order(1 "White" 2 "Black")) ///
-		xtitle("Commute Time") ytitle("Density") ylabel(0[0.01]0.04)
-		
-	graph export "${DGIT}/results/${SAMPLE}/plots/distributions/kdensity_byrace_`y'_bw5.png", replace
-
-}	
 
 
 ************************************
@@ -356,14 +248,6 @@ preserve
 
 	replace bin_5 = (bin_5 - 1) * 5 + 2.5
 
-	hist bin_5 [fw = freq], discrete ytitle("Density") xtitle("Commute Time (minutes)")
-	graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_all_bw5.png", replace
-
-	twoway (hist bin_5 [fw = freq] if d_black == 0, discrete color(gray) lcolor(none)) ///
-			(hist bin_5 [fw = freq] if d_black == 1, discrete fcolor(none) lcolor(black)), ///
-			legend(order(1 "White" 2 "Black") row(1) pos(6)) xtitle("Commute Time (minutes)") ytitle("Density")
-	graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_byrace_bw5.png", replace
-
 	local years_list 1980 1990 2000 2010 2019
 	foreach y of local years_list {
 
@@ -373,74 +257,11 @@ preserve
 			xtitle("Commute Time (minutes)") ytitle("Density") ylabel(0[0.01]0.04)
 			
 		graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_byrace_`y'_bw5.png", replace
+		graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_byrace_`y'_bw5.eps", replace
 
 	}	
 
 restore
-
-
-************************************
-*--Histograms, by mode
-preserve
-
-	gen freq = 1
-	collapse (sum) freq [aw=czwt_tt], by(year_bin d_black tranwork bin_5) 
-
-	replace freq = round(freq)  // round to nearest integer
-
-	replace bin_5 = (bin_5 - 1) * 5 + 2.5
-
-	foreach n in 10 30 36 37 50 60 70 {
-		
-		local lab = "`: label tranwork_label `n''"
-		disp "`lab'"
-
-		twoway (hist bin_5 [fw = freq] if tranwork_bin == `n' & d_black == 0, discrete color(gray) lcolor(none)) ///
-				(hist bin_5 [fw = freq] if tranwork_bin == `n' & d_black == 1, discrete fcolor(none) lcolor(black)), ///
-				legend(order(1 "White" 2 "Black") row(1) pos(6)) xtitle("Commute Time") ytitle("Density") ///
-				note("`: label tranwork_1b `n''", size(small)) ylabel(0[0.02]0.06)
-		graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_byrace_`lab'_bw5.png", replace
-
-	}
-
-	local years_list 1980 1990 2000 2010 2019
-	foreach y of local years_list {
-
-		foreach n in 10 30 36 37 50 60 70 {
-		
-		local lab = "`: label tranwork_label `n''"
-		disp "`lab'"
-
-		twoway (hist bin_5 [fw = freq] if tranwork_bin == `n' & year_bin == `y' & d_black == 0, discrete color(gray) lcolor(none)) ///
-			(hist bin_5 [fw = freq] if tranwork_bin == `n' & year_bin == `y' & d_black == 1, discrete fcolor(none) lcolor(black)), ///
-			legend(order(1 "White" 2 "Black") row(1) pos(6)) ///
-			xtitle("Commute Time") ytitle("Density") ylabel(0[0.02]0.06) ///
-			note("`: label tranwork_1b `n'' in `y' Year Bin", size(small))
-			
-		graph export "${DGIT}/results/${SAMPLE}/plots/distributions/hist_byrace_`y'_`lab'_bw5.png", replace
-
-		}
-	}	
-
-restore
-
-
-************************************
-*--Changes in travel time distribution
-// preserve
-//
-// 	gcollapse (p10) p10_tt=trantime (p25) p25_tt=trantime (p50) p50_tt=trantime ///
-// 				(p75) p75_tt=trantime (p90) p90_tt=trantime [aw=czwt_tt], by(year d_blac) 
-//	
-//	
-// 	twoway (line p50_tt year if d_black == 0, lstyle(solid) lcolor(orange))  ///
-// 		(line p50_tt year if d_black == 1, lpattern(dash) lcolor(orange)) 
-//		
-// 		///
-// 		(line trantime year if tranwork == 30 & d_black == 0, lstyle(solid) lcolor(cyan))  ///
-// 		(line trantime year if tranwork == 30 & d_black == 1, lpattern(dash) lcolor(cyan))  
-//		
-// restore
 
 /*------------------------------------------------------------------------------
 	Conditional plots
@@ -582,6 +403,7 @@ twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black)) ///
 				 10 "5: year + CZ + demo + cargq + mode" ///
 				 12 "6: year + CZ + demo + cargq + mode + work") rows(3) pos(6))	 
 graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols.eps", replace
 
 twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 	(scatter beta_race_1 year, connect(l) m(i) lstyle(solid) lcolor(black))  ///
@@ -597,6 +419,7 @@ twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 				 6 "CZ + demo + cargq"  ///
 				 8 "CZ + demo + cargq + mode + work") rows(2) pos(6) subtitle("Controls:     ", pos(9)))	 
 graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_simpler.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_simpler.eps", replace
 
 twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 	(scatter beta_race_1 year, connect(l) m(i) lstyle(solid) lcolor(black))  ///
@@ -612,6 +435,7 @@ twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 				 6 "Controls: CZ, Demog/Educ"  ///
 				 8 "Controls: CZ, Demog/Educ, Car in HH/Group Quarters, Commute Mode, Work/Income") rows(4) pos(6))	 
 graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_simpler_newlegend.png", replace
+graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_simpler_newlegend.eps", replace
 
 frame change default
 frame drop regvalues
@@ -796,6 +620,7 @@ foreach mm in 10 30 36 37 50 60 70 99 {
 					 4 "CZ"	/// 
 					 6 "CZ + demo + cargq + work") rows(1) pos(6) subtitle("Controls:   ", pos(9)))	 
 	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'_simpler.png", replace
+	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'_simpler.eps", replace
 	
 	twoway (rcap upper_race_1 lower_race_1 year , lstyle(ci) lcolor(black%30)) ///
 		(scatter beta_race_1 year, connect(l) m(i) lstyle(solid) lcolor(black))  ///
@@ -808,7 +633,8 @@ foreach mm in 10 30 36 37 50 60 70 99 {
 				 4 "Controls: CZ"	/// 
 				 6 "Controls: CZ, Demog/Educ, Car in HH/Group Quarters,`add' Work/Income") rows(3) pos(6))	 
 	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'_simpler_newlegend.png", replace
-
+	graph export "${DGIT}/results/${SAMPLE}/plots/conditional_oncontrols_`mode'_simpler_newlegend.eps", replace
+	
 	clear
 }
 
