@@ -1,31 +1,30 @@
+/* REPLICATION MATERIALS FOR
+The Problem Has Existed over Endless Years: Racialized Difference in Commuting, 1980-2019"
+by devin michelle bunten, Ellen Fu, Lyndsey Rolheiser, and Christopher Severen
+Journal of Urban Economics, article 103542
+
+To replicate data construction and results, set global variables DATA and DGIT 
+	in lines 23-24, then run lines 29-99 in Stata. You will also need to 
+	use R to run the files listed in lines 52-54, 70-71, and 102
+	
+To replicate results only, set global variables DATA and DGIT 
+	in lines 23-24, then run lines 65-100 in Stata. You will also need to 
+	use R to run the files listed in lines 52-54, 70-71, and 102
+
+Some analysis files and data creation take a long time to run.
+
+Note some files are very large. We recommend at least 32GB of RAM.
+*/
+
+** SET VARIABLES BELOW **
 clear
 cls
 
-di 	"current user: `c(username)'"
-if "`c(username)'" == "USERNAME" {
-	global DATA "DROPBOXLOCATION/RacialCommutingGap"
-} 
-else if "`c(username)'" == "ellenfu" {
-	*global DATA "/Users/ellenfu/Dropbox (Penn)/Research/RacialCommutingGap"
-	global DATA "C:/Users/ellenfu/Dropbox (Penn)/Research/RacialCommutingGap"
-}
-else if "`c(username)'" == "C1EXF02" {
-	global DATA "C:/Dropbox/Dropbox (Penn)/Research/RacialCommutingGap"
-}
-else if "`c(username)'" == "RNCNS02" {
-	global DATA "C:/Dropbox/Dropbox/Data_Projects/RacialCommutingGap"
-	global DGIT "C:/GitHub/RacializedCommutes"
-} 
-else if "`c(username)'" == "Chris.Severen" {
-	global DATA "C:/Users/Chris.Severen/Dropbox/Data_Projects/RacialCommutingGap"
-	global DGIT "C:/GitHub/RacializedCommutes"
-} 
-else if "`c(username)'" == "C1NHS01" {
-	global DATA "C:/Dropbox/Dropbox (Phil Research)/RacialCommutingGap"
-}
-else {
-	di "Who are you?"
-}
+global DATA "C:/Users/Chris.Severen/Dropbox/Data_Projects/RacialCommutingGap"
+global DGIT "C:/GitHub/RacializedCommutes"
+
+*******************************
+*** Run below this point ***
 
 di	"${DATA}"
 di	"${DGIT}"
@@ -36,20 +35,30 @@ global SAMPLE = "black-white"  // "black-nonblack" <-> to add: additional functi
 *** PACKAGES ***
 *ssc install blindschemes, replace all
 *ssc install reghdfe
-
 set scheme plotplainblind
 
 
-
+****************************
 *** DATA CONSTRUCTION ***
+
+** Main Census/ACS Data Flow (this takes awhile to run)
 do 		"${DGIT}/code/build/0_tranmode_race_bins_6070.do" /* Constructs 1960 and 1970 mode shares by race */
 do 		"${DGIT}/code/build/0_ipums_carinhh.do" /* Constructs number of cars in hh */
 do		"${DGIT}/code/build/0_ipums_1980-2000_prep.do"	/* Calls ./0A_czone_mergers.do */
 do		"${DGIT}/code/build/0_ipums_2001-2019_prep.do"	/* Calls ./0A_czone_mergers.do */
 do		"${DGIT}/code/build/1_ipums_combine_clean.do" 	/* Calls ./1A_additional_var_prep.do */
 
-	/* incorporate 0B and 0C to workflow -- and the R scripts */ 
+** R data prep. Use R to run: (CS is not sure what these do)
+* "${DGIT}/code/build/0A_employment_prep.do" 
+* "${DGIT}/code/build/0A_nhgis_prep.do" 
+* "${DGIT}/code/build/0A_nhgis_prep_revised.do" 
 
+** NHGIS Data Prep
+do		"${DGIT}/code/build/0B_nhgis_append.do" 	
+do		"${DGIT}/code/build/0C_nhgis_housing_append.do" 	
+
+	
+****************************
 *** Micro Analysis ***
 	/* Note: many files call ${DGIT}/code/analysis/parse_sample.do */
 
@@ -67,10 +76,7 @@ do		"${DGIT}/code/analysis/income.do"
 do		"${DGIT}/code/analysis/bigcity-diffs.do"
 		
 * Decomposition
-	*TO BE DELETED /*Note: Also execute .../decomps.R for decomps too large for Stata */
-	*TO BE DELETED MAYBE /*Note: Also execute .../decomps_respowtran.R for alternative decomp */
 do		"${DGIT}/code/analysis/decomposition_yearbins.do"
-*do		"${DGIT}/code/analysis/decomps_powrespuma.do" and _puma
 
 * City-Level Preparation
 do		"${DGIT}/code/analysis/czFEs_1_make_coefficients.do" /* Calls ./czFEs_1A_regs.do */
@@ -87,12 +93,13 @@ do		"${DGIT}/code/analysis/city-level_graphs.do"		/* Calls ./city-level_prep.do 
 * Tract-Level Analysis
 do		"${DGIT}/code/analysis/tract_regs.do" 	
 
-
-
-* TO ADD IN
+* Housing Price Analysis
 do		"${DGIT}/code/analysis/housingprice_ptile_all.do"
 do		"${DGIT}/code/analysis/housingprice_ptile_bycz.do"
 do		"${DGIT}/code/analysis/housingcost_inverse.do"
+
+* Maps (Run in R)
+* "${DGIT}/code/map/make_maps.R" 
 
 
 /*Reference 
